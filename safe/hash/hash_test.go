@@ -1,6 +1,7 @@
 package hash
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -11,9 +12,9 @@ func Test_hashing(t *testing.T) {
 		Val int
 	}{Val : 1}
 
-	h1 := hash(val1)
-	h2 := hash(val2)
-	h3 := hash(val3)
+	h1 := Hash(val1)
+	h2 := Hash(val2)
+	h3 := Hash(val3)
 
 	if h1 == h2 {
 		t.Fail()
@@ -26,4 +27,5 @@ func Test_hashing(t *testing.T) {
 	if h2 == h3 {
 		t.Fail()
 	}
+	fmt.Println(h1,h2,h3, m)
 }

@@ -9,10 +9,10 @@ import (
 
 const (
 	prime = 127
-	M     = math.MaxInt64
+	m     = math.MaxInt64
 )
 
-func hash(i interface{}) int {
+func Hash(i interface{}) int {
 
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)
@@ -25,7 +25,7 @@ func hash(i interface{}) int {
 	byteValues := buf.Bytes()
 	var index int
 	for i, v := range byteValues {
-		index += prime*i + int(v)%M
+		index += prime*i + int(v)%m
 	}
 
 	return index

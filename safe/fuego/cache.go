@@ -1,6 +1,10 @@
 package cache
 
-import "sync"
+import (
+	"github.com/tomiok/fuego-cache/safe/encoding"
+	"github.com/tomiok/fuego-cache/safe/hash"
+	"sync"
+)
 
 //Cache is the base structure for Fuego cache.
 type Cache struct {
@@ -10,12 +14,12 @@ type Cache struct {
 
 //Fuego
 type Fuego struct {
-	Entries map[int64][]byte
+	Entries map[int][]byte
 }
 
 //FuegoEntry
 type Entry struct {
-	Key   int64
+	Key   int
 	Value []byte
 }
 
@@ -29,9 +33,9 @@ func (c *Cache) AddOne(e Entry) bool {
 
 
 func ToEntry(key, value interface{}) Entry {
-
+	encode := encoding.Encode(value)
 	return Entry{
-		Key:   0,
-		Value: nil,
+		Key:   hash.Hash(key),
+		Value: encode.Bytes(),
 	}
 }
