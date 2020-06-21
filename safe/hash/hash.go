@@ -4,9 +4,13 @@ import (
 	"bytes"
 	"encoding/gob"
 	"github.com/tomiok/fuego-cache/logs"
+	"math"
 )
 
-const prime = 127
+const (
+	prime = 127
+	M     = math.MaxInt64
+)
 
 func hash(i interface{}) int {
 
@@ -15,13 +19,14 @@ func hash(i interface{}) int {
 	err := enc.Encode(i)
 
 	if err != nil {
-		logs.Error("cannot encode interface")
+		logs.Error("cannot encode interface: " + err.Error())
+		return 0
 	}
 	byteValues := buf.Bytes()
-	var count int
-	for _, v := range byteValues {
-		count += prime*count + int(v)
+	var index int
+	for i, v := range byteValues {
+		index += prime*i + int(v)%M
 	}
 
-	return count
+	return index
 }
