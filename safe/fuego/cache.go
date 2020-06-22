@@ -1,8 +1,6 @@
 package cache
 
 import (
-	"errors"
-	"github.com/tomiok/fuego-cache/safe/encoding"
 	"github.com/tomiok/fuego-cache/safe/hash"
 	"sync"
 )
@@ -15,20 +13,22 @@ type Cache struct {
 
 func NewCache() *Cache {
 	return &Cache{
-		Cache: &Fuego{},
-		Lock:  sync.RWMutex{},
+		Cache: &Fuego{
+			Entries: make(map[int]string),
+		},
+		Lock: sync.RWMutex{},
 	}
 }
 
 //Fuego
 type Fuego struct {
-	Entries map[int][]byte
+	Entries map[int]string
 }
 
 //FuegoEntry
 type Entry struct {
 	Key        int
-	Value      []byte
+	Value      string
 	Expiration int64
 }
 
@@ -40,7 +40,7 @@ func (c *Cache) AddOne(e Entry) bool {
 	return true
 }
 
-func (c *Cache) GetOne(key interface{}) interface{} {
+func (c *Cache) GetOne(key interface{}) string {
 	c.Lock.RLock()
 	val := c.Cache.Entries[hash.Hash(key)]
 	c.Lock.RUnlock()
@@ -48,14 +48,10 @@ func (c *Cache) GetOne(key interface{}) interface{} {
 }
 
 //ToEntry convert key value interfaces into a system Entry.
-func ToEntry(key, value interface{}) (Entry, error) {
-	encode := encoding.Encode(value)
-	if encode.Len() == 0 {
-		return Entry{}, errors.New("cannot encode the value")
-	}
+func ToEntry(key interface{}, value string) (Entry, error) {
 
 	return Entry{
 		Key:   hash.Hash(key),
-		Value: encode.Bytes(),
+		Value: value,
 	}, nil
 }
