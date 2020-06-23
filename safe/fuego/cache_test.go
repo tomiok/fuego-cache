@@ -21,13 +21,14 @@ func Test_AddGetOne(t *testing.T) {
 	res := fuegoCache.AddOne(e)
 
 	if !res {
+		t.Log("cannot add")
 		t.Fail()
 	}
 
 	value := fuegoCache.GetOne(1)
 
 	if value != "1" {
-
+		t.Log("cannot read " + value)
 		t.Fail()
 	}
 }

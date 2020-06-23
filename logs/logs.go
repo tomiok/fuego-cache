@@ -17,3 +17,7 @@ func Info(msg string) {
 func Error(msg string) {
 	errorLogger.Println(msg)
 }
+
+func LogError(err error) {
+	errorLogger.Println(err.Error())
+}
