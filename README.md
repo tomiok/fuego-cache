@@ -4,13 +4,17 @@ Fuego cache is a concurrent hashed key-value pair written 100% in Golang. Could 
 ### Operations in HTTP mode
 
 1. Add a value
+
   URL: ```/fuego```
+  
   Method: POST
+  
   Body: ```json
         {
           "key" : "someKey",
           "value" : "someValue"
         }```
+        
   Response: 201
 
 2. Get a Value
