@@ -15,14 +15,20 @@ Fuego cache is a concurrent hashed key-value pair written 100% in Golang. Could 
           "value" : "someValue"
         }```
         
-  Response: 201
+  Response: HTTP status = 201
 
 2. Get a Value
+
   URL: ```/fuego/{key}```
+  
   Method: GET
+  
   Response:```json
         {
           "key" : "someKey",
           "value" : "someValue"
         }```
+        
+  HTTP status = 200
   
+------------------------------------------------------------
