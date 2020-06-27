@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"github.com/tomiok/fuego-cache/internal"
 	"github.com/tomiok/fuego-cache/logs"
-
 	"net"
 )
 
@@ -100,7 +99,7 @@ func (s *server) Listen() {
 
 // Creates new tcp server instance
 func New(address string) *server {
-	//	logs.Info("Creating server with address", address)
+	logs.Info("Creating server with address " + address)
 	server := &server{
 		address: address,
 		config:  nil,
@@ -114,7 +113,7 @@ func New(address string) *server {
 }
 
 func NewWithTLS(address string, certFile string, keyFile string) *server {
-	//	logs.Info("Creating server with address", address)
+	logs.Info("Creating server with address " + address)
 	cert, _ := tls.LoadX509KeyPair(certFile, keyFile)
 	config := tls.Config{
 		Certificates: []tls.Certificate{cert},

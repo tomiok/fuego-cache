@@ -6,7 +6,6 @@ const space = " "
 
 type Message struct {
 	InputMessage string
-	//	Validate(op, k, v string) error
 }
 
 func NewFuegoMessage(msg string) *Message {
@@ -15,13 +14,31 @@ func NewFuegoMessage(msg string) *Message {
 	}
 }
 
-func (m *Message) Compute() FuegoOps {
+func (m *Message) Compute(cache *Cache) FuegoOps {
 	operation := strings.Split(m.InputMessage, space)
-
-	if len(operation) == 0 {
+	l := len(operation)
+	if l == 0 {
 		return nil
 	}
 
-	//TODO finish this implementation
+	//read
+	if l == 2 {
+		return &ReadOperation{
+			Operation: operation[0],
+			Key:       operation[1],
+			DoGet:     cache.GetOne,
+		}
+	}
+
+	//write
+	if l == 3 {
+		return &WriteOperation{
+			Operation: operation[0],
+			Key:       operation[1],
+			Value:     operation[2],
+			DoAdd:     cache.AddOne,
+		}
+	}
+
 	return nil
 }

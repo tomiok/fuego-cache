@@ -6,8 +6,8 @@ import (
 )
 
 var (
-	infoLogger  = log.New(os.Stdout, "info: ", log.Ldate|log.Ltime)
-	errorLogger = log.New(os.Stdout, "error: ", log.Ldate|log.Ltime)
+	infoLogger  = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime)
+	errorLogger = log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime)
 )
 
 func Info(msg string) {
