@@ -10,7 +10,7 @@ type Message struct {
 
 func NewFuegoMessage(msg string) *Message {
 	return &Message{
-		InputMessage: msg,
+		InputMessage: strings.TrimSuffix(msg, "\n"),
 	}
 }
 
@@ -24,7 +24,7 @@ func (m *Message) Compute(cache *Cache) FuegoOps {
 	//read
 	if l == 2 {
 		action := operation[0]
-		if strings.ToUpper(action) != "GET" {
+		if strings.ToUpper(action) != get {
 			return nil
 		}
 		return &ReadOperation{
@@ -37,7 +37,7 @@ func (m *Message) Compute(cache *Cache) FuegoOps {
 	//write
 	if l == 3 {
 		action := operation[0]
-		if strings.ToUpper(action) != "ADD" {
+		if strings.ToUpper(action) != set {
 			return nil
 		}
 		return &WriteOperation{

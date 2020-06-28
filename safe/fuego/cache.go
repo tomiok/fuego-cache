@@ -6,6 +6,11 @@ import (
 	"sync"
 )
 
+const (
+	get = "GET"
+	set = "SET"
+)
+
 type g func(key interface{}) string
 type a func(e Entry) bool
 

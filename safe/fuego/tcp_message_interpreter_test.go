@@ -5,13 +5,13 @@ import (
 )
 
 const (
-	correctMessageAdd = "add 1 1"
+	correctMessageSet = "set 1 1"
 	correctMessageGet = "get 1"
 	incorrectMessage  = "incorrect"
 )
 
 func Test_NewTCPMessageCorrectMessage(t *testing.T) {
-	m := NewFuegoMessage(correctMessageAdd)
+	m := NewFuegoMessage(correctMessageSet)
 	if m == nil {
 		t.Fail()
 	}
@@ -26,7 +26,7 @@ func Test_NewTCPMessageIncorrectMessage(t *testing.T) {
 
 func TestMessage_Compute(t *testing.T) {
 	fuegoCache := NewCache()
-	msg := NewFuegoMessage(correctMessageAdd)
+	msg := NewFuegoMessage(correctMessageSet)
 
 	res := msg.Compute(fuegoCache).Apply()
 
@@ -41,4 +41,15 @@ func TestMessage_Compute(t *testing.T) {
 	if res.Response != "1" {
 		t.Fail()
 	}
+}
+
+func Test_Compute_incorrectMessage(t *testing.T) {
+	fuegoCache := NewCache()
+	msg := NewFuegoMessage(incorrectMessage)
+	res := msg.Compute(fuegoCache)
+
+	if res != nil {
+		t.Fail()
+	}
+
 }

@@ -13,7 +13,10 @@ func main() {
 	s.OnNewMessage(func(c *server.Client, message string) {
 		operationMessage := cache.NewFuegoMessage(message)
 		ops := operationMessage.Compute(fuegoInstance)
-		ops.Apply()
+		if ops != nil {
+			response := ops.Apply()
+			_ = c.Send(response.Response + "\n")
+		}
 	})
 
 	s.Listen()
