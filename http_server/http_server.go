@@ -3,7 +3,6 @@ package httpserver
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/tomiok/fuego-cache/logs"
 	"net/http"
 	"strings"
 )
@@ -13,45 +12,43 @@ type httpServer struct {
 }
 
 type HttpResponse struct {
-	Data string `json:"data"`
+	Value string `json:"value"`
 }
 
 type HttpRequestBody struct {
 	Value string `json:"value"`
 }
 
-func handleGet(w http.ResponseWriter, r *http.Request) {
+func getValue(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/fuego/")
 
+	// TODO: get the actual stored value
 	response := HttpResponse{}
-	response.Data = id
+	response.Value = id
 
 	data, err := json.Marshal(response)
 
 	if err != nil {
-		logs.Error("Error parsing json: " + err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(data)
 }
 
-func handlePost(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Received apost")
-
+func setValue(w http.ResponseWriter, r *http.Request) {
 	var body HttpRequestBody
 
 	err := json.NewDecoder(r.Body).Decode(&body)
 
 	if err != nil {
-		logs.Error("Error decoding body: " + err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	parsedBody, err := json.Marshal(body)
 
 	if err != nil {
-		logs.Error("Error parsing json: " + err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	fmt.Printf(string(parsedBody))
@@ -62,14 +59,16 @@ func handlePost(w http.ResponseWriter, r *http.Request) {
 func httpHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		handleGet(w, r)
+		getValue(w, r)
 	case "POST":
-		handlePost(w, r)
+		setValue(w, r)
+	default:
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
 func (s *httpServer) Listen() {
-	http.HandleFunc("/fuego/", httpHandler)
+	http.HandleFunc("/fuego", httpHandler)
 
 	http.ListenAndServe(s.address, nil)
 }
