@@ -10,7 +10,7 @@ var (
 	errorLogger = log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime)
 )
 
-func Info(msg string) {
+func Info(msg interface{}) {
 	infoLogger.Println(msg)
 }
 

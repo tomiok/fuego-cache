@@ -6,13 +6,17 @@ import (
 	"sync"
 )
 
-//FuegoOps
-type FuegoOps interface {
-	Apply()
-}
-
 type g func(key interface{}) string
 type a func(e Entry) bool
+
+//FuegoOps
+type FuegoOps interface {
+	Apply() *FuegoResponse
+}
+
+type FuegoResponse struct {
+	Response string
+}
 
 type WriteOperation struct {
 	Operation string
@@ -21,15 +25,22 @@ type WriteOperation struct {
 	DoAdd     a
 }
 
-func (f *WriteOperation) Apply() {
+func (f *WriteOperation) Apply() *FuegoResponse {
+	logs.Info("write operation")
 	e, err := ToEntry(f.Key, f.Value)
 
 	if err != nil {
 		logs.LogError(err)
-		return
+		return nil
 	}
 
-	f.DoAdd(e)
+	b := f.DoAdd(e)
+	if b {
+		return &FuegoResponse{
+			Response: "OK",
+		}
+	}
+	return nil
 }
 
 type ReadOperation struct {
@@ -38,8 +49,8 @@ type ReadOperation struct {
 	DoGet     g
 }
 
-func (r *ReadOperation) Apply() {
-	r.DoGet(r.Key)
+func (r *ReadOperation) Apply() *FuegoResponse {
+	return &FuegoResponse{Response: r.DoGet(r.Key)}
 }
 
 //Cache is the base structure for Fuego cache.
@@ -82,6 +93,10 @@ func (c *Cache) GetOne(key interface{}) string {
 	val := c.Cache.Entries[hash.Hash(key)]
 	c.Lock.RUnlock()
 	return val
+}
+
+func (c *Cache) Count() int {
+	return len(c.Cache.Entries)
 }
 
 //ToEntry convert key value interfaces into a system Entry.

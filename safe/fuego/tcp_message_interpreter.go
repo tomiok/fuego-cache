@@ -23,6 +23,10 @@ func (m *Message) Compute(cache *Cache) FuegoOps {
 
 	//read
 	if l == 2 {
+		action := operation[0]
+		if strings.ToUpper(action) != "GET" {
+			return nil
+		}
 		return &ReadOperation{
 			Operation: operation[0],
 			Key:       operation[1],
@@ -32,6 +36,10 @@ func (m *Message) Compute(cache *Cache) FuegoOps {
 
 	//write
 	if l == 3 {
+		action := operation[0]
+		if strings.ToUpper(action) != "ADD" {
+			return nil
+		}
 		return &WriteOperation{
 			Operation: operation[0],
 			Key:       operation[1],
