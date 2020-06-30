@@ -3,8 +3,8 @@ package server
 import (
 	"bufio"
 	"crypto/tls"
+	"github.com/tomiok/fuego-cache/internal"
 	"github.com/tomiok/fuego-cache/logs"
-
 	"net"
 )
 
@@ -30,7 +30,7 @@ func (c *Client) listen() {
 	for {
 		message, err := reader.ReadString('\n')
 		if err != nil {
-			c.conn.Close()
+			internal.OnCloseError(c.conn.Close)
 			c.Server.onClientConnectionClosed(c, err)
 			return
 		}
@@ -85,7 +85,7 @@ func (s *server) Listen() {
 	if err != nil {
 		logs.Error("Error starting TCP server.")
 	}
-	defer listener.Close()
+	defer internal.OnCloseError(listener.Close)
 
 	for {
 		conn, _ := listener.Accept()
@@ -99,7 +99,7 @@ func (s *server) Listen() {
 
 // Creates new tcp server instance
 func New(address string) *server {
-	//	logs.Info("Creating server with address", address)
+	logs.Info("Creating server with address " + address)
 	server := &server{
 		address: address,
 		config:  nil,
@@ -113,7 +113,7 @@ func New(address string) *server {
 }
 
 func NewWithTLS(address string, certFile string, keyFile string) *server {
-	//	logs.Info("Creating server with address", address)
+	logs.Info("Creating server with address " + address)
 	cert, _ := tls.LoadX509KeyPair(certFile, keyFile)
 	config := tls.Config{
 		Certificates: []tls.Certificate{cert},

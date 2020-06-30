@@ -1,9 +1,62 @@
 package cache
 
 import (
+	"github.com/tomiok/fuego-cache/logs"
 	"github.com/tomiok/fuego-cache/safe/hash"
 	"sync"
 )
+
+const (
+	get = "GET"
+	set = "SET"
+)
+
+type g func(key interface{}) string
+type a func(e Entry) bool
+
+//FuegoOps
+type FuegoOps interface {
+	Apply() *FuegoResponse
+}
+
+type FuegoResponse struct {
+	Response string
+}
+
+type WriteOperation struct {
+	Operation string
+	Key       string
+	Value     string
+	DoAdd     a
+}
+
+func (f *WriteOperation) Apply() *FuegoResponse {
+	logs.Info("write operation")
+	e, err := ToEntry(f.Key, f.Value)
+
+	if err != nil {
+		logs.LogError(err)
+		return nil
+	}
+
+	b := f.DoAdd(e)
+	if b {
+		return &FuegoResponse{
+			Response: "OK",
+		}
+	}
+	return nil
+}
+
+type ReadOperation struct {
+	Operation string
+	Key       string
+	DoGet     g
+}
+
+func (r *ReadOperation) Apply() *FuegoResponse {
+	return &FuegoResponse{Response: r.DoGet(r.Key)}
+}
 
 //Cache is the base structure for Fuego cache.
 type Cache struct {
@@ -47,9 +100,12 @@ func (c *Cache) GetOne(key interface{}) string {
 	return val
 }
 
+func (c *Cache) Count() int {
+	return len(c.Cache.Entries)
+}
+
 //ToEntry convert key value interfaces into a system Entry.
 func ToEntry(key interface{}, value string) (Entry, error) {
-
 	return Entry{
 		Key:   hash.Hash(key),
 		Value: value,
