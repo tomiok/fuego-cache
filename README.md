@@ -1,6 +1,34 @@
 # fuego-cache
-Fuego cache is a concurrent hashed key-value pair written 100% in Golang
+Fuego cache is a concurrent hashed key-value pair written 100% in Golang. Could run in 2 modes either as TPC process or with an HTTP server.
 
-### Operations
+### Operations in HTTP mode
 
 1. Add a value
+
+  URL: ```/fuego```
+  
+  Method: POST
+  
+  Body: ```json
+        {
+          "key" : "someKey",
+          "value" : "someValue"
+        }```
+        
+  Response: HTTP status = 201
+
+2. Get a Value
+
+  URL: ```/fuego/{key}```
+  
+  Method: GET
+  
+  Response:```json
+        {
+          "key" : "someKey",
+          "value" : "someValue"
+        }```
+        
+  HTTP status = 200
+  
+------------------------------------------------------------

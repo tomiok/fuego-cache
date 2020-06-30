@@ -18,6 +18,11 @@ func Error(msg string) {
 	errorLogger.Println(msg)
 }
 
+func Fatal(msg string) {
+	errorLogger.Println(msg)
+	os.Exit(1)
+}
+
 func LogError(err error) {
 	errorLogger.Println(err.Error())
 }
