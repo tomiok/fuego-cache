@@ -31,7 +31,6 @@ type WriteOperation struct {
 }
 
 func (f *WriteOperation) Apply() *FuegoResponse {
-	logs.Info("write operation")
 	e, err := ToEntry(f.Key, f.Value)
 
 	if err != nil {

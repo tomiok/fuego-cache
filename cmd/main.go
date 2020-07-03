@@ -1,10 +1,9 @@
 package main
 
 import (
-	httpserver "github.com/tomiok/fuego-cache/http_server"
-	"github.com/tomiok/fuego-cache/logs"
-	cache "github.com/tomiok/fuego-cache/safe/fuego"
-
+	"github.com/tomiok/fuego-cache/http_server"
+	"github.com/tomiok/fuego-cache/safe/fuego"
+	"github.com/tomiok/fuego-cache/stdio_client"
 	"github.com/tomiok/fuego-cache/tcp_server"
 	"os"
 )
@@ -25,9 +24,20 @@ func main() {
 
 		s.Listen()
 	} else if mode == "http" {
-		http := httpserver.NewHTTPServer("localhost:9919")
+		http := httpServer.NewHTTPServer("localhost:9919")
 		http.Listen()
 	} else {
-		logs.Fatal("Missing environment variable: MODE")
+		s := stdioClient.NewStdClient()
+		s.PrintBanner()
+		s.OnNewMessage(func(message string) string {
+			operationMessage := cache.NewFuegoMessage(message)
+			ops := operationMessage.Compute(fuegoInstance)
+			if ops != nil {
+				return ops.Apply().Response
+			}
+
+			return "nil"
+		})
+		s.StandardInputCache()
 	}
 }
