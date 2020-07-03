@@ -8,14 +8,28 @@ import (
 	"os/signal"
 )
 
-func StandardInputCache() {
+type callback func(string) string
+
+type StdClient struct {
+	OnMessage callback
+}
+
+func NewStdClient() *StdClient {
+	return &StdClient{}
+}
+
+func (s *StdClient) OnNewMessage(callback callback) {
+	s.OnMessage = callback
+}
+
+func (s *StdClient) StandardInputCache() {
 	quit := make(chan os.Signal, 1)
 	go func() {
+		logs.StdInfo("start with fuego here... (set 1 1)")
 		for {
-			logs.StdInfo("start with fuego here... (set 1 1)")
 			reader := bufio.NewReader(os.Stdin)
 			text, _ := reader.ReadString('\n')
-			logs.Info(text)
+			logs.StdInfo(s.OnMessage(text))
 		}
 	}()
 
@@ -27,6 +41,6 @@ func StandardInputCache() {
 	}
 }
 
-func PrintBanner() {
+func (s *StdClient) PrintBanner() {
 	internal.PrintBanner()
 }

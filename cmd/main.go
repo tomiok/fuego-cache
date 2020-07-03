@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-
 	mode := os.Getenv("MODE")
 	var fuegoInstance = cache.NewCache()
 	if mode == "tcp" {
@@ -28,7 +27,17 @@ func main() {
 		http := httpServer.NewHTTPServer("localhost:9919")
 		http.Listen()
 	} else {
-		stdioClient.PrintBanner()
-		stdioClient.StandardInputCache()
+		s := stdioClient.NewStdClient()
+		s.PrintBanner()
+		s.OnNewMessage(func(message string) string {
+			operationMessage := cache.NewFuegoMessage(message)
+			ops := operationMessage.Compute(fuegoInstance)
+			if ops != nil {
+				return ops.Apply().Response
+			}
+
+			return "nil"
+		})
+		s.StandardInputCache()
 	}
 }
