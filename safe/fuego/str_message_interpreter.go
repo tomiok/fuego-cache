@@ -44,7 +44,7 @@ func (m *Message) Compute(cache *Cache) FuegoOps {
 			Operation: operation[0],
 			Key:       operation[1],
 			Value:     operation[2],
-			DoAdd:     cache.AddOne,
+			DoAdd:     cache.SetOne,
 		}
 	}
 
