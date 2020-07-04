@@ -8,11 +8,17 @@ import (
 var (
 	infoLogger  = log.New(os.Stdout, "INFO: ", log.Ldate|log.Ltime)
 	errorLogger = log.New(os.Stdout, "ERROR: ", log.Ldate|log.Ltime)
-	stdLogger   = log.New(os.Stdout, "", 0)
+	fatalLogger = log.New(os.Stdout, "FATAL: ", log.Ldate|log.Ltime)
+	//standard input/output
+	stdLogger = log.New(os.Stdout, "", 0)
 )
 
 func Info(msg interface{}) {
 	infoLogger.Println(msg)
+}
+
+func Infof(s string, v ...interface{}) {
+	infoLogger.Printf(s, v)
 }
 
 func Error(msg string) {
@@ -20,8 +26,7 @@ func Error(msg string) {
 }
 
 func Fatal(msg interface{}) {
-	errorLogger.Println(msg)
-	os.Exit(1)
+	fatalLogger.Fatal(msg)
 }
 
 func LogError(err error) {
