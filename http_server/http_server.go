@@ -3,6 +3,7 @@ package httpServer
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/tomiok/fuego-cache/logs"
 	"net/http"
 	"strings"
 )
@@ -33,7 +34,7 @@ func getValue(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(data)
+	_, _ = w.Write(data)
 }
 
 func setValue(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +71,7 @@ func httpHandler(w http.ResponseWriter, r *http.Request) {
 func (s *httpServer) Listen() {
 	http.HandleFunc("/fuego", httpHandler)
 
-	http.ListenAndServe(s.address, nil)
+	logs.Fatal(http.ListenAndServe(s.address, nil))
 }
 
 func NewHTTPServer(address string) *httpServer {

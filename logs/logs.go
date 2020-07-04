@@ -19,7 +19,7 @@ func Error(msg string) {
 	errorLogger.Println(msg)
 }
 
-func Fatal(msg string) {
+func Fatal(msg interface{}) {
 	errorLogger.Println(msg)
 	os.Exit(1)
 }
