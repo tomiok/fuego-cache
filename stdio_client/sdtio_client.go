@@ -26,8 +26,9 @@ func (s *StdClient) Listen() {
 	quit := make(chan os.Signal, 1)
 	go func() {
 		logs.StdInfo("start with fuego here... (set 1 1)")
+		reader := bufio.NewReader(os.Stdin)
 		for {
-			reader := bufio.NewReader(os.Stdin)
+
 			text, _ := reader.ReadString('\n')
 			logs.StdInfo(s.OnMessage(text))
 		}
