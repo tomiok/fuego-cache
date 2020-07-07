@@ -112,7 +112,8 @@ func New(address string) *server {
 	return server
 }
 
-func NewWithTLS(address string, certFile string, keyFile string) *server {
+//TCP with TLS
+func _(address string, certFile string, keyFile string) *server {
 	logs.Info("Creating server with address " + address)
 	cert, _ := tls.LoadX509KeyPair(certFile, keyFile)
 	config := tls.Config{
