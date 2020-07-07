@@ -38,6 +38,6 @@ func main() {
 
 			return "nil"
 		})
-		s.StandardInputCache()
+		s.Listen()
 	}
 }

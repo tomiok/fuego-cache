@@ -22,7 +22,7 @@ func (s *StdClient) OnNewMessage(callback callback) {
 	s.OnMessage = callback
 }
 
-func (s *StdClient) StandardInputCache() {
+func (s *StdClient) Listen() {
 	quit := make(chan os.Signal, 1)
 	go func() {
 		logs.StdInfo("start with fuego here... (set 1 1)")
@@ -32,12 +32,15 @@ func (s *StdClient) StandardInputCache() {
 			logs.StdInfo(s.OnMessage(text))
 		}
 	}()
+	s.close(quit)
+}
 
+func (s *StdClient) close(quit chan os.Signal) {
 	signal.Notify(quit, os.Interrupt)
 
 	select {
 	case <-quit:
-		logs.StdInfo("exiting...")
+		logs.StdInfo("\nbye...")
 	}
 }
 
