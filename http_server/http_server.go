@@ -7,22 +7,22 @@ import (
 )
 
 type FuegoHTTPServer struct {
-	address string
-	s       http.Server
+	s *http.Server
+	o *operations.OpsHandler
 }
 
-
-
-func (s *FuegoHTTPServer) Listen() {
-	http.HandleFunc("/fuego", operations.httpHandler)
-
-	logs.Fatal(http.ListenAndServe(s.address, nil))
+func (f *FuegoHTTPServer) Listen() {
+	f.o.Routes()
+	logs.Fatal(f.s.ListenAndServe())
 }
 
-func NewHTTPServer(address string) *FuegoHTTPServer {
-	server := &FuegoHTTPServer{
-		address: address,
+func NewHTTPServer(address string, o *operations.OpsHandler) *FuegoHTTPServer {
+	s := &http.Server{
+		Addr: address,
 	}
 
-	return server
+	return &FuegoHTTPServer{
+		s: s,
+		o: o,
+	}
 }

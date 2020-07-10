@@ -37,8 +37,14 @@ func (o *OpsHandler) SetValueHandler(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(&res)
 }
 
-func DeleteValueHandler(w http.ResponseWriter, r *http.Request) {
+func (o *OpsHandler) DeleteValueHandler(w http.ResponseWriter, r *http.Request) {
 
+}
+
+func (o *OpsHandler) Routes() {
+	http.HandleFunc("/fuego/get/", o.GetValueHandler)
+	http.HandleFunc("/fuego/set/", o.SetValueHandler)
+	http.HandleFunc("/fuego/del/", o.DeleteValueHandler)
 }
 
 type GetResponse struct {
