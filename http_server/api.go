@@ -6,8 +6,13 @@ type Api struct {
 	Server *FuegoHTTPServer
 }
 
-func NewHTTPApi(addr string, o *operations.OpsHandler) *Api{
-	return &Api{Server:  NewHTTPServer(addr, o)}
+type Services struct {
+	Ops *operations.OpsHandler
+}
+
+func NewHTTPApi(addr string, s Services) *Api {
+	mux :=	operations.Routes(s.Ops)
+	return &Api{Server: NewHTTPServer(addr, mux)}
 }
 
 func (a *Api) Start() {

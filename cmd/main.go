@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	mode := flag.String("mode", "cli", "Mode to run Fuego")
+	mode := flag.String("mode", "http", "Mode to run Fuego")
 	flag.Parse()
 
 	logs.Info(*mode)
@@ -30,8 +30,8 @@ func main() {
 
 		s.Listen()
 	} else if *mode == "http" {
-
-		api := httpServer.NewHTTPApi(":9919", &operations.OpsHandler{
+		addr := ":9919"
+		api := httpServer.NewHTTPApi(addr, httpServer.Services{Ops: &operations.OpsHandler{
 			GetCallback: func(s string) string {
 				return fuegoInstance.GetOne(s)
 			},
@@ -42,8 +42,8 @@ func main() {
 				}
 				return fuegoInstance.SetOne(entry)
 			},
-		})
-		logs.Info("stating server at 9919")
+		}})
+		logs.Info("stating server at " + addr)
 		api.Start()
 	} else {
 		s := stdioClient.NewStdClient()
