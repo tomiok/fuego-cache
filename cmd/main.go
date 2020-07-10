@@ -1,17 +1,23 @@
 package main
 
 import (
+	"flag"
 	"github.com/tomiok/fuego-cache/http_server"
+	"github.com/tomiok/fuego-cache/http_server/operations"
+	"github.com/tomiok/fuego-cache/logs"
 	"github.com/tomiok/fuego-cache/safe/fuego"
 	"github.com/tomiok/fuego-cache/stdio_client"
 	"github.com/tomiok/fuego-cache/tcp_server"
-	"os"
 )
 
 func main() {
-	mode := os.Getenv("MODE")
+	mode := flag.String("mode", "http", "Mode to run Fuego")
+	flag.Parse()
+
+	logs.Info(*mode)
+
 	var fuegoInstance = cache.NewCache()
-	if mode == "tcp" {
+	if *mode == "tcp" {
 		s := server.New("localhost:9919")
 		s.OnNewMessage(func(c *server.Client, message string) {
 			operationMessage := cache.NewFuegoMessage(message)
@@ -23,9 +29,22 @@ func main() {
 		})
 
 		s.Listen()
-	} else if mode == "http" {
-		http := httpServer.NewHTTPServer("localhost:9919")
-		http.Listen()
+	} else if *mode == "http" {
+		addr := ":9919"
+		api := httpServer.NewHTTPApi(addr, httpServer.Services{Ops: &operations.OpsHandler{
+			GetCallback: func(s string) string {
+				return fuegoInstance.GetOne(s)
+			},
+			SetCallback: func(k, v string) string {
+				entry, err := cache.ToEntry(k, v)
+				if err != nil {
+					return "nil"
+				}
+				return fuegoInstance.SetOne(entry)
+			},
+		}})
+		logs.Info("stating server at " + addr)
+		api.Start()
 	} else {
 		s := stdioClient.NewStdClient()
 		s.PrintBanner()
