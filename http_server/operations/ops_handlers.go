@@ -15,13 +15,15 @@ type OpsHandler struct {
 	SetCallback func(k, v string) string
 }
 
-func (o *OpsHandler) GetValueHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	id := strings.TrimPrefix(r.URL.Path, urlGen("get/"))
+func (o *OpsHandler) GetValueHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		id := strings.TrimPrefix(r.URL.Path, urlGen("get/"))
 
-	res := o.GetCallback(id)
+		res := o.GetCallback(id)
 
-	_ = json.NewEncoder(w).Encode(GetResponse{Response: res})
+		_ = json.NewEncoder(w).Encode(GetResponse{Response: res})
+	}
 }
 
 func (o *OpsHandler) SetValueHandler() http.HandlerFunc {
@@ -50,17 +52,16 @@ func (o *OpsHandler) SetValueHandler() http.HandlerFunc {
 	}
 }
 
-func (o *OpsHandler) DeleteValueHandler(w http.ResponseWriter, r *http.Request) {
+func (o *OpsHandler) DeleteValueHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 
+	}
 }
 
-func Routes(o *OpsHandler) *http.ServeMux {
-	mux := http.NewServeMux()
-
-	mux.HandleFunc(urlGen("get/"), o.GetValueHandler)
+func AddRoutes(o *OpsHandler, mux *http.ServeMux) {
+	mux.HandleFunc(urlGen("get/"), o.GetValueHandler())
 	mux.HandleFunc(urlGen("set"), o.SetValueHandler())
-	mux.HandleFunc(urlGen("del"), o.DeleteValueHandler)
-	return mux
+	mux.HandleFunc(urlGen("del/"), o.DeleteValueHandler())
 }
 
 type GetResponse struct {

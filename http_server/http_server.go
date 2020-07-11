@@ -6,20 +6,20 @@ import (
 )
 
 type FuegoHTTPServer struct {
-	s *http.Server
+	server *http.Server
 }
 
 func (f *FuegoHTTPServer) Listen() {
-	logs.Fatal(f.s.ListenAndServe())
+	logs.Fatal(f.server.ListenAndServe())
 }
 
 func NewHTTPServer(address string, mux http.Handler) *FuegoHTTPServer {
-	s := &http.Server{
+	server := &http.Server{
 		Addr:    address,
 		Handler: mux,
 	}
 
 	return &FuegoHTTPServer{
-		s: s,
+		server: server,
 	}
 }

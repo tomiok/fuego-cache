@@ -14,8 +14,6 @@ func main() {
 	mode := flag.String("mode", "http", "Mode to run Fuego")
 	flag.Parse()
 
-	logs.Info(*mode)
-
 	var fuegoInstance = cache.NewCache()
 	if *mode == "tcp" {
 		s := server.New("localhost:9919")
@@ -44,7 +42,7 @@ func main() {
 			},
 		}})
 		logs.Info("stating server at " + addr)
-		api.Start()
+		api.Listen()
 	} else {
 		s := stdioClient.NewStdClient()
 		s.PrintBanner()
