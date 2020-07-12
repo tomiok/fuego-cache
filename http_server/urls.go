@@ -1,5 +1,7 @@
 package httpServer
 
 const (
-	getUrl = "/fuego/"
+	getUrl    = "/fuego/get/"
+	setUrl    = "/fuego/set"
+	deleteUrl = "/fuego/del/"
 )
