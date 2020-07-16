@@ -18,7 +18,7 @@ type OpsHandler struct {
 func (o *OpsHandler) GetValueHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		id := strings.TrimPrefix(r.URL.Path, urlGen("get/"))
+		id := strings.TrimPrefix(r.URL.Path, GetUrl)
 
 		res := o.GetCallback(id)
 
@@ -59,9 +59,9 @@ func (o *OpsHandler) DeleteValueHandler() http.HandlerFunc {
 }
 
 func AddRoutes(o *OpsHandler, mux *http.ServeMux) {
-	mux.HandleFunc(urlGen("get/"), o.GetValueHandler())
-	mux.HandleFunc(urlGen("set"), o.SetValueHandler())
-	mux.HandleFunc(urlGen("del/"), o.DeleteValueHandler())
+	mux.HandleFunc(GetUrl, o.GetValueHandler())
+	mux.HandleFunc(SetUrl, o.SetValueHandler())
+	mux.HandleFunc(DeleteUrl, o.DeleteValueHandler())
 }
 
 type GetResponse struct {
