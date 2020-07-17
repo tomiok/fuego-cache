@@ -10,7 +10,7 @@ func Test_hashing(t *testing.T) {
 	val2 := "1"
 	val3 := struct {
 		Val int
-	}{Val : 1}
+	}{Val: 1}
 
 	h1 := Hash(val1)
 	h2 := Hash(val2)
@@ -27,5 +27,5 @@ func Test_hashing(t *testing.T) {
 	if h2 == h3 {
 		t.Fail()
 	}
-	fmt.Println(h1,h2,h3, m)
+	fmt.Println(h1, h2, h3, m)
 }

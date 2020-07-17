@@ -16,7 +16,7 @@ func PrintBanner() {
 		fire())
 }
 
-func fire()string {
+func fire() string {
 	return `                        .                      
                           /                       
                           (                       
