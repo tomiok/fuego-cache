@@ -17,10 +17,6 @@ func Info(msg interface{}) {
 	infoLogger.Println(msg)
 }
 
-func Infof(s string, v ...interface{}) {
-	infoLogger.Printf(s, v)
-}
-
 func Error(msg string) {
 	errorLogger.Println(msg)
 }
