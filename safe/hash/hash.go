@@ -12,7 +12,7 @@ const (
 	m     = math.MaxInt64
 )
 
-func Hash(i interface{}) int {
+func Apply(i interface{}) int {
 
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)
