@@ -49,13 +49,13 @@ func Test_DeleteOne(t *testing.T) {
 		t.Fail()
 	}
 
-	res := fuegoCache.DelOne(2) //should be nil the response since 2 is not a key inserted
+	res := fuegoCache.DeleteOne(2) //should be nil the response since 2 is not a key inserted
 
 	if res != "nil" {
 		t.Fail()
 	}
 
-	res = fuegoCache.DelOne(1)
+	res = fuegoCache.DeleteOne(1)
 
 	if res != "ok" {
 		t.Fail()

@@ -29,16 +29,19 @@ func main() {
 		s.Listen()
 	} else if *mode == "http" {
 		addr := ":9919"
-		api := httpServer.NewHTTPApi(addr, httpServer.Services{Ops: &operations.OpsHandler{
-			GetCallback: func(s string) string {
+		api := httpServer.NewHTTPApi(addr, httpServer.Services{Ops: &operations.WebOperationsHandler{
+			GetCallback: func(s interface{}) string {
 				return fuegoInstance.GetOne(s)
 			},
-			SetCallback: func(k, v string) string {
+			SetCallback: func(k interface{}, v string) string {
 				entry, err := cache.ToEntry(k, v)
 				if err != nil {
 					return "nil"
 				}
 				return fuegoInstance.SetOne(entry)
+			},
+			DeleteCallback: func(k interface{}) string {
+				return fuegoInstance.DeleteOne(k)
 			},
 		}})
 		logs.Info("stating server at " + addr)

@@ -10,7 +10,7 @@ type Api struct {
 }
 
 type Services struct {
-	Ops *operations.OpsHandler
+	Ops *operations.WebOperationsHandler
 }
 
 func NewHTTPApi(addr string, services Services) *Api {

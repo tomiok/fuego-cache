@@ -54,7 +54,7 @@ func (c *Cache) GetOne(key interface{}) string {
 	return val
 }
 
-func (c *Cache) DelOne(key interface{}) string {
+func (c *Cache) DeleteOne(key interface{}) string {
 	c.Lock.RLock()
 	hashKey := hash.Hash(key)
 	_, ok := c.Cache.Entries[hashKey]
@@ -64,7 +64,7 @@ func (c *Cache) DelOne(key interface{}) string {
 		c.Lock.RUnlock()
 		return responseOK
 	}
-
+	c.Lock.RUnlock()
 	return responseNil
 }
 
