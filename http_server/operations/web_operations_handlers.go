@@ -29,7 +29,7 @@ func (o *WebOperationsHandler) SetValueHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
-		if r.Method == "POST" {
+		if r.Method == PostMethod {
 			body := r.Body
 			var b SetRequest
 			err := json.NewDecoder(body).Decode(&b)
@@ -53,10 +53,10 @@ func (o *WebOperationsHandler) SetValueHandler() http.HandlerFunc {
 func (o *WebOperationsHandler) DeleteValueHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		if r.Method == "DELETE" {
+		if r.Method == DeleteMethod {
 			id := strings.TrimPrefix(r.URL.Path, DeleteUrl)
 			deleted := o.DeleteCallback(id)
-			_ = json.NewEncoder(w).Encode(DeleteResponse{Deleted: deleted})
+			_ = json.NewEncoder(w).Encode(WebResponse{Response: deleted})
 		} else {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -72,10 +72,6 @@ func AddRoutes(o *WebOperationsHandler, mux *http.ServeMux) {
 
 type WebResponse struct {
 	Response string `json:"response"`
-}
-
-type DeleteResponse struct {
-	Deleted string `json:"deleted"`
 }
 
 type SetRequest struct {
