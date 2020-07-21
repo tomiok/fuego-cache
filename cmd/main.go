@@ -31,7 +31,8 @@ func main() {
 		addr := ":9919"
 		api := httpServer.NewHTTPApi(addr, httpServer.Services{Ops: &operations.WebOperationsHandler{
 			GetCallback: func(s interface{}) string {
-				return fuegoInstance.GetOne(s)
+				val, _ := fuegoInstance.GetOne(s)
+				return val
 			},
 			SetCallback: func(k interface{}, v string) string {
 				entry, err := cache.ToEntry(k, v)

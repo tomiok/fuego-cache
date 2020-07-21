@@ -2,7 +2,7 @@ package cache
 
 import "github.com/tomiok/fuego-cache/logs"
 
-type g func(key interface{}) string
+type g func(key interface{}) (string, error)
 type a func(e Entry) string
 
 //FuegoOps
@@ -43,5 +43,11 @@ type ReadOperation struct {
 }
 
 func (r *ReadOperation) Apply() FuegoResponse {
-	return FuegoResponse{Response: r.DoGet(r.Key)}
+	val, err :=	r.DoGet(r.Key)
+
+	if err != nil {
+		val = responseNil //todo fix this with an error response
+	}
+
+	return FuegoResponse{Response: val}
 }
