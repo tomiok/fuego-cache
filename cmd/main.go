@@ -32,7 +32,6 @@ func main() {
 		api := httpServer.NewHTTPApi(addr, httpServer.Services{Ops: &operations.WebOperationsHandler{
 			GetCallback: func(s interface{}) (string, error) {
 				return fuegoInstance.GetOne(s)
-
 			},
 			SetCallback: func(k interface{}, v string) (string, error) {
 				return fuegoInstance.SetOne(k, v)

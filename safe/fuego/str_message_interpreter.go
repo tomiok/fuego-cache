@@ -14,7 +14,7 @@ func NewFuegoMessage(msg string) *Message {
 	}
 }
 
-func (m *Message) Compute(cache *Cache) FuegoOps {
+func (m *Message) Compute(cache *cache) FuegoOps {
 	operation := strings.Split(m.InputMessage, space)
 	l := len(operation)
 	if l == 0 {

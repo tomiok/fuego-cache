@@ -14,112 +14,111 @@ const (
 	responseNil = "nil"
 )
 
-//Cache is the base structure for Fuego cache.
-type Cache struct {
-	Cache *Fuego
-	Lock  sync.RWMutex // read and write lock
-	TTL   int64        // TTL in seconds
+//cache is the base structure for Fuego cache.
+type cache struct {
+	cache *fuego
+	lock  sync.RWMutex // read and write lock
 }
 
-func NewCache() *Cache {
-	return &Cache{
-		Cache: &Fuego{
-			Entries: make(map[int]FuegoValue),
+func NewCache() *cache {
+	return &cache{
+		cache: &fuego{
+			entries: make(map[int]fuegoValue),
 		},
-		Lock: sync.RWMutex{},
+		lock: sync.RWMutex{},
 	}
 }
 
-//Fuego
-type Fuego struct {
-	Entries map[int]FuegoValue
+//fuego
+type fuego struct {
+	entries map[int]fuegoValue
 }
 
-type FuegoValue struct {
-	Value string
-	TTL   int64
+type fuegoValue struct {
+	value string
+	ttl   int64
 }
 
 //FuegoEntry
-type Entry struct {
-	Key    int
-	Object FuegoValue
+type entry struct {
+	key    int
+	object fuegoValue
 }
 
 //SetOne will add an entry into the key-value store.
-func (c *Cache) SetOne(k interface{}, v string, ttl ...int) (string, error) {
+func (c *cache) SetOne(k interface{}, v string, ttl ...int) (string, error) {
 	expiration := -1
 	if len(ttl) > 0 {
 		expiration = ttl[0]
 	}
-	e := ToEntry(k, v, expiration)
+	e := toEntry(k, v, expiration)
 
-	c.Lock.Lock()
-	c.Cache.Entries[e.Key] = FuegoValue{Value: e.Object.Value, TTL: e.Object.TTL}
-	c.Lock.Unlock()
+	c.lock.Lock()
+	c.cache.entries[e.key] = fuegoValue{value: e.object.value, ttl: e.object.ttl}
+	c.lock.Unlock()
 	return responseOK, nil
 }
 
-func (c *Cache) GetOne(key interface{}) (string, error) {
-	c.Lock.RLock()
+func (c *cache) GetOne(key interface{}) (string, error) {
+	c.lock.RLock()
 	hashedKey := hash.Apply(key)
-	val, ok := c.Cache.Entries[hashedKey]
+	val, ok := c.cache.entries[hashedKey]
 
 	if ok {
-		if ttl := val.TTL; ttl > 0 { // when TTL is negative, the entry will not expire
+		if ttl := val.ttl; ttl > 0 { // when TTL is negative, the entry will not expire
 			if time.Now().Unix() > ttl {
-				c.Lock.RUnlock()
-				return val.Value, nil
+				c.lock.RUnlock()
+				return val.value, nil
 			}
-			delete(c.Cache.Entries, hashedKey)
-			c.Lock.RUnlock()
+			delete(c.cache.entries, hashedKey)
+			c.lock.RUnlock()
 			return responseNil, errors.New("key expired")
 		}
 
-		c.Lock.RUnlock()
-		return val.Value, nil
+		c.lock.RUnlock()
+		return val.value, nil
 	}
 
 	return responseNil, errors.New("key not found")
 }
 
-func (c *Cache) DeleteOne(key interface{}) string {
-	c.Lock.RLock()
+func (c *cache) DeleteOne(key interface{}) string {
+	c.lock.RLock()
 	hashKey := hash.Apply(key)
-	_, ok := c.Cache.Entries[hashKey]
+	_, ok := c.cache.entries[hashKey]
 
 	if ok {
-		delete(c.Cache.Entries, hashKey)
-		c.Lock.RUnlock()
+		delete(c.cache.entries, hashKey)
+		c.lock.RUnlock()
 		return responseOK
 	}
-	c.Lock.RUnlock()
+	c.lock.RUnlock()
 	return responseNil
 }
 
-func (c *Cache) Count() int {
-	return len(c.Cache.Entries)
+func (c *cache) Count() int {
+	return len(c.cache.entries)
 }
 
-//ToEntry convert key value interfaces into a system Entry.
-func ToEntry(key interface{}, value string, ttl int) Entry {
+//toEntry convert key value interfaces into a system Entry.
+func toEntry(key interface{}, value string, ttl int) entry {
 	// client add a TTL into the entry
 	hashedKey := hash.Apply(key)
 	if ttl > 0 {
-		return Entry{
-			Key: hashedKey,
-			Object: FuegoValue{
-				Value: value,
-				TTL:   int64(ttl) + time.Now().Unix(),
+		return entry{
+			key: hashedKey,
+			object: fuegoValue{
+				value: value,
+				ttl:   int64(ttl) + time.Now().Unix(),
 			},
 		}
 	}
 
-	return Entry{
-		Key: hashedKey,
-		Object: FuegoValue{
-			Value: value,
-			TTL:   -1,
+	return entry{
+		key: hashedKey,
+		object: fuegoValue{
+			value: value,
+			ttl:   -1,
 		},
 	}
 }

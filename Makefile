@@ -21,7 +21,7 @@ run:
 	./$(BINARY_NAME)
 
 fmt:
-	$(GOFMT)
+	$(GOFMT) -w .
 
 # Cross compilation
 build-linux:
