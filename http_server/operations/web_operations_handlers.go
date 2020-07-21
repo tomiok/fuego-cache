@@ -9,18 +9,19 @@ import (
 
 type WebOperationsHandler struct {
 	GetCallback    func(k interface{}) (string, error)
-	SetCallback    func(k interface{}, v string) (string, error)
+	SetCallback    func(k interface{}, v string, ttl int) (string, error)
 	DeleteCallback func(k interface{}) (string, error)
 }
 
 func (o *WebOperationsHandler) GetValueHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		id := strings.TrimPrefix(r.URL.Path, GetUrl)
-		var _id interface{}
-		_id = id
-		res, err := o.GetCallback(_id)
+		key := strings.TrimPrefix(r.URL.Path, GetUrl)
+		var _key interface{}
+		_key = key
+		res, err := o.GetCallback(_key)
 
+		//when a response is with error true and value is nil, it means that the key is not present in the cache
 		_ = json.NewEncoder(w).Encode(WebResponse{Response: res, Err: err != nil})
 	}
 }
@@ -39,7 +40,7 @@ func (o *WebOperationsHandler) SetValueHandler() http.HandlerFunc {
 				return
 			}
 
-			res, err := o.SetCallback(b.Key, b.Value)
+			res, err := o.SetCallback(b.Key, b.Value, b.TTL)
 
 			internal.OnCloseError(body.Close)
 			_ = json.NewEncoder(w).Encode(WebResponse{Response: res, Err: err != nil})
@@ -78,4 +79,5 @@ type WebResponse struct {
 type SetRequest struct {
 	Key   interface{} `json:"key"`
 	Value string      `json:"value"`
+	TTL   int         `json:"ttl,omitempty"` //if 0 it is supposed no TTL, those are IN SECONDS
 }

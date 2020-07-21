@@ -78,7 +78,7 @@ func (c *cache) GetOne(key interface{}) (string, error) {
 		c.lock.RUnlock()
 		return val.value, nil
 	}
-
+	c.lock.RUnlock()
 	return responseNil, errors.New("key not found")
 }
 

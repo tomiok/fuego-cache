@@ -22,8 +22,7 @@ func Test_SetAndGetOne(t *testing.T) {
 	}
 
 	if res != "ok" {
-		t.Log("cannot add")
-		t.Fail()
+		t.Fatal("cannot add")
 	}
 
 	value, err := fuegoCache.GetOne(1)
@@ -33,8 +32,7 @@ func Test_SetAndGetOne(t *testing.T) {
 	}
 
 	if value != "1" {
-		t.Log("cannot read " + value)
-		t.Fail()
+		t.Fatalf("cannot read %s", value)
 	}
 }
 
@@ -83,11 +81,11 @@ func Test_expiredEntry(t *testing.T) {
 	ok, err := fuegoCache.SetOne(1, "hello there", ttlInSeconds)
 
 	if err != nil {
-		t.Errorf("test failed %s", err.Error())
+		t.Fatalf("test failed %s", err.Error())
 	}
 
 	if ok != "ok" {
-		t.Errorf("error setting value %s", ok)
+		t.Fatalf("error setting value %s", ok)
 	}
 
 	time.Sleep(4000) // 4 seconds
@@ -100,7 +98,7 @@ func Test_expiredEntry(t *testing.T) {
 
 	if err != nil {
 		if err.Error() != "key expired" {
-			t.Errorf("key should be expired")
+			t.Fatalf("key should be expired")
 		}
 	}
 }

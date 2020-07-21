@@ -33,8 +33,8 @@ func main() {
 			GetCallback: func(s interface{}) (string, error) {
 				return fuegoInstance.GetOne(s)
 			},
-			SetCallback: func(k interface{}, v string) (string, error) {
-				return fuegoInstance.SetOne(k, v)
+			SetCallback: func(k interface{}, v string, ttl int) (string, error) {
+				return fuegoInstance.SetOne(k, v, ttl)
 			},
 			DeleteCallback: func(k interface{}) (string, error) {
 				return fuegoInstance.DeleteOne(k), nil
