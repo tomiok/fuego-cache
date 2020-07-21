@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"errors"
 	"github.com/tomiok/fuego-cache/safe/hash"
 	"sync"
 	"time"
@@ -53,11 +54,27 @@ func (c *Cache) SetOne(e Entry) string {
 	return responseOK
 }
 
-func (c *Cache) GetOne(key interface{}) string {
+func (c *Cache) GetOne(key interface{}) (string, error) {
 	c.Lock.RLock()
-	val := c.Cache.Entries[hash.Apply(key)]
-	c.Lock.RUnlock()
-	return val.Value
+	hashedKey := hash.Apply(key)
+	val, ok := c.Cache.Entries[hashedKey]
+
+	if ok {
+		if ttl := val.TTL; ttl > 0 { // when TTL is negative, the entry will not expire
+			if time.Now().Unix() > ttl {
+				c.Lock.RUnlock()
+				return val.Value, nil
+			}
+			delete(c.Cache.Entries, hashedKey)
+			c.Lock.RUnlock()
+			return responseNil, errors.New("key expired")
+		}
+
+		c.Lock.RUnlock()
+		return val.Value, nil
+	}
+
+	return responseNil, errors.New("key not found")
 }
 
 func (c *Cache) DeleteOne(key interface{}) string {
