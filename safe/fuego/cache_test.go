@@ -88,7 +88,17 @@ func Test_expiredEntry(t *testing.T) {
 		t.Fatalf("error setting value %s", ok)
 	}
 
-	time.Sleep(4000) // 4 seconds
+	val, err := fuegoCache.GetOne(1)
+
+	if ok != "ok" {
+		t.Fatalf("error setting value %s", ok)
+	}
+
+	if val != "hello there" {
+		t.Fatal("entry shold be stored")
+	}
+
+	time.Sleep(time.Second * 4) // 4 seconds
 
 	ok, err = fuegoCache.GetOne(1)
 

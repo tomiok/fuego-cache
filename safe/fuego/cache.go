@@ -66,7 +66,7 @@ func (c *cache) GetOne(key interface{}) (string, error) {
 
 	if ok {
 		if ttl := val.ttl; ttl > 0 { // when TTL is negative, the entry will not expire
-			if time.Now().Unix() > ttl {
+			if time.Now().Unix() < ttl { // TTL bigger means that is not expired
 				c.lock.RUnlock()
 				return val.value, nil
 			}
