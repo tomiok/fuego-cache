@@ -1,9 +1,7 @@
 package cache
 
-import "github.com/tomiok/fuego-cache/logs"
-
-type g func(key interface{}) (string, error)
-type a func(e Entry) string
+type getCallback func(key interface{}) (string, error)
+type addCallback func(key interface{}, value string, ttl ...int) (string, error)
 
 //FuegoOps
 type FuegoOps interface {
@@ -12,38 +10,33 @@ type FuegoOps interface {
 
 type FuegoResponse struct {
 	Response string
+	Err      bool
 }
 
 type WriteOperation struct {
 	Operation string
 	Key       string
 	Value     string
-	DoAdd     a
+	DoAdd     addCallback
 }
 
 func (f *WriteOperation) Apply() FuegoResponse {
-	e, err := ToEntry(f.Key, f.Value)
-
-	if err != nil {
-		logs.LogError(err)
-		return FuegoResponse{Response: responseNil}
-	}
-
-	res := f.DoAdd(e)
+	res, err := f.DoAdd(f.Key, f.Value)
 
 	return FuegoResponse{
 		Response: res,
+		Err:      err != nil,
 	}
 }
 
 type ReadOperation struct {
 	Operation string
 	Key       string
-	DoGet     g
+	DoGet     getCallback
 }
 
 func (r *ReadOperation) Apply() FuegoResponse {
-	val, err :=	r.DoGet(r.Key)
+	val, err := r.DoGet(r.Key)
 
 	if err != nil {
 		val = responseNil //todo fix this with an error response

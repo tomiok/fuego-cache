@@ -8,9 +8,9 @@ import (
 )
 
 type WebOperationsHandler struct {
-	GetCallback    func(k interface{}) string
-	SetCallback    func(k interface{}, v string) string
-	DeleteCallback func(k interface{}) string
+	GetCallback    func(k interface{}) (string, error)
+	SetCallback    func(k interface{}, v string) (string, error)
+	DeleteCallback func(k interface{}) (string, error)
 }
 
 func (o *WebOperationsHandler) GetValueHandler() http.HandlerFunc {
@@ -19,9 +19,9 @@ func (o *WebOperationsHandler) GetValueHandler() http.HandlerFunc {
 		id := strings.TrimPrefix(r.URL.Path, GetUrl)
 		var _id interface{}
 		_id = id
-		res := o.GetCallback(_id)
+		res, err := o.GetCallback(_id)
 
-		_ = json.NewEncoder(w).Encode(WebResponse{Response: res})
+		_ = json.NewEncoder(w).Encode(WebResponse{Response: res, Err: err != nil})
 	}
 }
 
@@ -39,10 +39,10 @@ func (o *WebOperationsHandler) SetValueHandler() http.HandlerFunc {
 				return
 			}
 
-			res := o.SetCallback(b.Key, b.Value)
+			res, err := o.SetCallback(b.Key, b.Value)
 
 			internal.OnCloseError(body.Close)
-			_ = json.NewEncoder(w).Encode(WebResponse{Response: res})
+			_ = json.NewEncoder(w).Encode(WebResponse{Response: res, Err: err != nil})
 		} else {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -55,8 +55,8 @@ func (o *WebOperationsHandler) DeleteValueHandler() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		if r.Method == DeleteMethod {
 			id := strings.TrimPrefix(r.URL.Path, DeleteUrl)
-			deleted := o.DeleteCallback(id)
-			_ = json.NewEncoder(w).Encode(WebResponse{Response: deleted})
+			deleted, err := o.DeleteCallback(id)
+			_ = json.NewEncoder(w).Encode(WebResponse{Response: deleted, Err: err != nil})
 		} else {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -72,6 +72,7 @@ func AddRoutes(o *WebOperationsHandler, mux *http.ServeMux) {
 
 type WebResponse struct {
 	Response string `json:"response"`
+	Err      bool   `json:"err"`
 }
 
 type SetRequest struct {

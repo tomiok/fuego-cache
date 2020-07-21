@@ -47,11 +47,17 @@ type Entry struct {
 }
 
 //SetOne will add an entry into the key-value store.
-func (c *Cache) SetOne(e Entry) string {
+func (c *Cache) SetOne(k interface{}, v string, ttl ...int) (string, error) {
+	expiration := -1
+	if len(ttl) > 0 {
+		expiration = ttl[0]
+	}
+	e := ToEntry(k, v, expiration)
+
 	c.Lock.Lock()
 	c.Cache.Entries[e.Key] = FuegoValue{Value: e.Object.Value, TTL: e.Object.TTL}
 	c.Lock.Unlock()
-	return responseOK
+	return responseOK, nil
 }
 
 func (c *Cache) GetOne(key interface{}) (string, error) {
@@ -96,18 +102,17 @@ func (c *Cache) Count() int {
 }
 
 //ToEntry convert key value interfaces into a system Entry.
-func ToEntry(key interface{}, value string, ttl ...int) (Entry, error) {
+func ToEntry(key interface{}, value string, ttl int) Entry {
 	// client add a TTL into the entry
 	hashedKey := hash.Apply(key)
-	if len(ttl) > 0 {
-		ttlValue := ttl[0]
+	if ttl > 0 {
 		return Entry{
 			Key: hashedKey,
 			Object: FuegoValue{
 				Value: value,
-				TTL:   int64(ttlValue) + time.Now().Unix(),
+				TTL:   int64(ttl) + time.Now().Unix(),
 			},
-		}, nil
+		}
 	}
 
 	return Entry{
@@ -116,6 +121,5 @@ func ToEntry(key interface{}, value string, ttl ...int) (Entry, error) {
 			Value: value,
 			TTL:   -1,
 		},
-	}, nil
-
+	}
 }
