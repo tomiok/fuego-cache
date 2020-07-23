@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
+	"github.com/tomiok/fuego-cache/fuego"
 	"github.com/tomiok/fuego-cache/http_server"
 	"github.com/tomiok/fuego-cache/http_server/operations"
 	"github.com/tomiok/fuego-cache/logs"
-	"github.com/tomiok/fuego-cache/safe/fuego"
 	"github.com/tomiok/fuego-cache/stdio_client"
 	"github.com/tomiok/fuego-cache/tcp_server"
 )

@@ -6,7 +6,7 @@ GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 GOFMT=$(GOCMD)fmt
 MAIN= cmd/main.go
-BINARY_NAME=fuego
+BINARY_NAME=fuego-cache
 
 all: test build
 
