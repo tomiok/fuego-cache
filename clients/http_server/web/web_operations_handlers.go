@@ -1,4 +1,4 @@
-package operations
+package web
 
 import (
 	"encoding/json"
@@ -7,13 +7,13 @@ import (
 	"strings"
 )
 
-type WebOperationsHandler struct {
+type OperationsHandler struct {
 	GetCallback    func(k interface{}) (string, error)
 	SetCallback    func(k interface{}, v string, ttl int) (string, error)
 	DeleteCallback func(k interface{}) (string, error)
 }
 
-func (o *WebOperationsHandler) GetValueHandler() http.HandlerFunc {
+func (o *OperationsHandler) GetValueHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		key := strings.TrimPrefix(r.URL.Path, GetUrl)
@@ -26,7 +26,7 @@ func (o *WebOperationsHandler) GetValueHandler() http.HandlerFunc {
 	}
 }
 
-func (o *WebOperationsHandler) SetValueHandler() http.HandlerFunc {
+func (o *OperationsHandler) SetValueHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -51,7 +51,7 @@ func (o *WebOperationsHandler) SetValueHandler() http.HandlerFunc {
 	}
 }
 
-func (o *WebOperationsHandler) DeleteValueHandler() http.HandlerFunc {
+func (o *OperationsHandler) DeleteValueHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		if r.Method == DeleteMethod {
@@ -65,7 +65,7 @@ func (o *WebOperationsHandler) DeleteValueHandler() http.HandlerFunc {
 	}
 }
 
-func AddRoutes(o *WebOperationsHandler, mux *http.ServeMux) {
+func AddRoutes(o *OperationsHandler, mux *http.ServeMux) {
 	mux.HandleFunc(GetUrl, o.GetValueHandler())
 	mux.HandleFunc(SetUrl, o.SetValueHandler())
 	mux.HandleFunc(DeleteUrl, o.DeleteValueHandler())

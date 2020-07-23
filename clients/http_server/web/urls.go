@@ -1,4 +1,4 @@
-package operations
+package web
 
 const (
 	GetUrl    = "/fuego/get/"

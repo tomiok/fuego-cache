@@ -2,7 +2,6 @@ package cache
 
 import (
 	"errors"
-	"github.com/tomiok/fuego-cache/safe/hash"
 	"sync"
 	"time"
 )
@@ -61,7 +60,7 @@ func (c *cache) SetOne(k interface{}, v string, ttl ...int) (string, error) {
 
 func (c *cache) GetOne(key interface{}) (string, error) {
 	c.lock.RLock()
-	hashedKey := hash.Apply(key)
+	hashedKey := Apply(key)
 	val, ok := c.cache.entries[hashedKey]
 
 	if ok {
@@ -84,7 +83,7 @@ func (c *cache) GetOne(key interface{}) (string, error) {
 
 func (c *cache) DeleteOne(key interface{}) string {
 	c.lock.RLock()
-	hashKey := hash.Apply(key)
+	hashKey := Apply(key)
 	_, ok := c.cache.entries[hashKey]
 
 	if ok {
@@ -103,7 +102,7 @@ func (c *cache) Count() int {
 //toEntry convert key value interfaces into a system Entry.
 func toEntry(key interface{}, value string, ttl int) entry {
 	// client add a TTL into the entry
-	hashedKey := hash.Apply(key)
+	hashedKey := Apply(key)
 	if ttl > 0 {
 		return entry{
 			key: hashedKey,
