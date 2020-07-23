@@ -2,12 +2,12 @@ package main
 
 import (
 	"flag"
+	"github.com/tomiok/fuego-cache/clients/http_server"
+	"github.com/tomiok/fuego-cache/clients/http_server/web"
+	"github.com/tomiok/fuego-cache/clients/stdio_client"
+	"github.com/tomiok/fuego-cache/clients/tcp_server"
 	"github.com/tomiok/fuego-cache/fuego"
-	"github.com/tomiok/fuego-cache/http_server"
-	"github.com/tomiok/fuego-cache/http_server/operations"
 	"github.com/tomiok/fuego-cache/logs"
-	"github.com/tomiok/fuego-cache/stdio_client"
-	"github.com/tomiok/fuego-cache/tcp_server"
 )
 
 func main() {
@@ -16,8 +16,8 @@ func main() {
 
 	var fuegoInstance = cache.NewCache()
 	if *mode == "tcp" {
-		s := server.New("localhost:9919")
-		s.OnNewMessage(func(c *server.Client, message string) {
+		s := tcpServer.New("localhost:9919")
+		s.OnNewMessage(func(c *tcpServer.Client, message string) {
 			operationMessage := cache.NewFuegoMessage(message)
 			ops := operationMessage.Compute(fuegoInstance)
 			if ops != nil {
@@ -29,7 +29,7 @@ func main() {
 		s.Listen()
 	} else if *mode == "http" {
 		addr := ":9919"
-		api := httpServer.NewHTTPApi(addr, httpServer.Services{Ops: &operations.WebOperationsHandler{
+		api := httpServer.NewHTTPApi(addr, httpServer.Services{Ops: &web.OperationsHandler{
 			GetCallback: func(s interface{}) (string, error) {
 				return fuegoInstance.GetOne(s)
 			},
