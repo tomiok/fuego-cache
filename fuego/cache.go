@@ -15,8 +15,11 @@ const (
 
 //cache is the base structure for Fuego cache.
 type cache struct {
-	cache  *fuego
-	lock   sync.RWMutex // read and write lock
+	//the cache instance itself.
+	cache *fuego
+	//read and write lock.
+	lock   sync.RWMutex
+	//cache configuration given in yaml file.
 	config FuegoConfig
 }
 
@@ -30,20 +33,21 @@ func NewCache(config FuegoConfig) *cache {
 	}
 }
 
-//fuego
+//fuego is the actual node of the cache.
 type fuego struct {
 	entries map[int]fuegoValue
 }
 
-type fuegoValue struct {
-	value string
-	ttl   int64
-}
-
-//FuegoEntry
+//FuegoEntry is the cache entry, composed by the key and the fuego value, which contains the value to store and the ttl.
 type entry struct {
 	key    int
 	object fuegoValue
+}
+
+//fuegoValue is the actual value to store and the ttl.
+type fuegoValue struct {
+	value string
+	ttl   int64
 }
 
 //SetOne will add an entry into the key-value store.
@@ -60,6 +64,8 @@ func (c *cache) SetOne(k interface{}, v string, ttl ...int) (string, error) {
 	return responseOK, nil
 }
 
+//GetOne will return a value in the cache if the key lookup is OK and the
+//value is not expired. Otherwise, the an error will be returned.
 func (c *cache) GetOne(key interface{}) (string, error) {
 	c.lock.RLock()
 	hashedKey := Apply(key)
@@ -83,6 +89,7 @@ func (c *cache) GetOne(key interface{}) (string, error) {
 	return responseNil, errors.New("key not found")
 }
 
+//DeleteOne will delete the entry given a key, returns "ok" if is deleted, otherwise "nil".
 func (c *cache) DeleteOne(key interface{}) string {
 	c.lock.RLock()
 	hashKey := Apply(key)
