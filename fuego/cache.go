@@ -2,6 +2,7 @@ package cache
 
 import (
 	"errors"
+	"github.com/tomiok/fuego-cache/persistence"
 	"sync"
 	"time"
 )
@@ -18,9 +19,13 @@ type cache struct {
 	//the cache instance itself.
 	cache *fuego
 	//read and write lock.
-	lock   sync.RWMutex
+	lock sync.RWMutex
 	//cache configuration given in yaml file.
 	config FuegoConfig
+
+	persist persistence.Persist
+
+	diskPersistence bool
 }
 
 func NewCache(config FuegoConfig) *cache {
@@ -30,6 +35,7 @@ func NewCache(config FuegoConfig) *cache {
 		},
 		lock:   sync.RWMutex{},
 		config: config,
+		diskPersistence: config.DiskPersistence,
 	}
 }
 
@@ -60,6 +66,10 @@ func (c *cache) SetOne(k interface{}, v string, ttl ...int) (string, error) {
 
 	c.lock.Lock()
 	c.cache.entries[e.key] = fuegoValue{value: e.object.value, ttl: e.object.ttl}
+	if c.diskPersistence {
+		c.persist.Save("set", e.key, e.object.value)
+	}
+
 	c.lock.Unlock()
 	return responseOK, nil
 }
@@ -97,6 +107,9 @@ func (c *cache) DeleteOne(key interface{}) string {
 
 	if ok {
 		delete(c.cache.entries, hashKey)
+		if c.diskPersistence {
+			c.persist.Save("del", hashKey, "") //value does not matter in delete operation
+		}
 		c.lock.RUnlock()
 		return responseOK
 	}

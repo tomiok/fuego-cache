@@ -25,7 +25,7 @@ func Test_NewTCPMessageIncorrectMessage(t *testing.T) {
 }
 
 func TestMessage_Compute(t *testing.T) {
-	fuegoCache := NewCache()
+	fuegoCache := NewCache(defaultConfigs())
 	msg := NewFuegoMessage(correctMessageSet)
 
 	res := msg.Compute(fuegoCache).Apply()
@@ -44,7 +44,7 @@ func TestMessage_Compute(t *testing.T) {
 }
 
 func Test_Compute_incorrectMessage(t *testing.T) {
-	fuegoCache := NewCache()
+	fuegoCache := NewCache(defaultConfigs())
 	msg := NewFuegoMessage(incorrectMessage)
 	res := msg.Compute(fuegoCache)
 

@@ -5,15 +5,24 @@ import (
 	"time"
 )
 
+func defaultConfigs() FuegoConfig {
+	return FuegoConfig{
+		DiskPersistence: false,
+		FileLocation:    "",
+		WebPort:         "9919",
+		Mode:            "http",
+	}
+}
+
 func Test_cacheConstructor(t *testing.T) {
-	c := NewCache()
+	c := NewCache(defaultConfigs())
 	if c == nil {
 		t.Fail()
 	}
 }
 
 func Test_SetAndGetOne(t *testing.T) {
-	fuegoCache := NewCache()
+	fuegoCache := NewCache(defaultConfigs())
 
 	res, err := fuegoCache.SetOne(1, "1")
 
@@ -37,7 +46,7 @@ func Test_SetAndGetOne(t *testing.T) {
 }
 
 func Test_DeleteOne(t *testing.T) {
-	fuegoCache := NewCache()
+	fuegoCache := NewCache(defaultConfigs())
 
 	res, err := fuegoCache.SetOne(1, "hell there")
 
@@ -76,7 +85,7 @@ func Test_DeleteOne(t *testing.T) {
 
 func Test_expiredEntry(t *testing.T) {
 	ttlInSeconds := 3
-	fuegoCache := NewCache()
+	fuegoCache := NewCache(defaultConfigs())
 
 	ok, err := fuegoCache.SetOne(1, "hello there", ttlInSeconds)
 
