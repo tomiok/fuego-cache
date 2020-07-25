@@ -15,16 +15,18 @@ const (
 
 //cache is the base structure for Fuego cache.
 type cache struct {
-	cache *fuego
-	lock  sync.RWMutex // read and write lock
+	cache  *fuego
+	lock   sync.RWMutex // read and write lock
+	config FuegoConfig
 }
 
-func NewCache() *cache {
+func NewCache(config FuegoConfig) *cache {
 	return &cache{
 		cache: &fuego{
 			entries: make(map[int]fuegoValue),
 		},
-		lock: sync.RWMutex{},
+		lock:   sync.RWMutex{},
+		config: config,
 	}
 }
 
