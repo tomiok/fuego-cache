@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	config := cache.MakeConfig(true, "", "http", 0)
+	config := cache.ParseConfiguration()
 
 	var fuegoInstance = cache.NewCache(config)
 	if config.Mode == "tcp" {

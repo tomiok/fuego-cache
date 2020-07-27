@@ -1,0 +1,6 @@
+{
+  "disk_persistence": true,
+  "file_location": "/home/fuego/cache.txt",
+  "web_port": "9999",
+  "mode": "http"
+}
