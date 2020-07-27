@@ -1,5 +1,5 @@
 {
-  "disk_persistence": true,
+  "disk_persistence": false,
   "file_location": "/Users/admin/cache.txt",
   "web_port": "9999",
   "mode": "http"
