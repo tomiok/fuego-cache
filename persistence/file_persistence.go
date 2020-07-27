@@ -5,20 +5,12 @@ import (
 	"github.com/tomiok/fuego-cache/internal"
 	"github.com/tomiok/fuego-cache/logs"
 	"os"
+	"path/filepath"
 	"time"
 )
 
 type Persist interface {
 	Save(operation string, k int, value string)
-}
-
-func Apply(p Persist, operation string, key int, value string) {
-	data := Data{
-		operation: operation,
-		key:       key,
-		value:     value,
-	}
-	p.Save(data.operation, data.key, data.value)
 }
 
 type Data struct {
@@ -32,17 +24,20 @@ type FilePersistence struct {
 }
 
 func (f *FilePersistence) Save(operation string, k int, value string) {
-	file, err := os.Create(f.File)
+	//read a file if already exists, or create a new one
+	file, err := os.OpenFile(filepath.Join(f.File), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 	if err != nil {
 		logs.LogError(err)
 		// no error returned, just a shame
+		return
 	}
+
 	defer internal.OnCloseError(file.Close)
 
 	record := buildRecord(operation, k, value)
 
-	_, err = file.Write(record)
+	_, err = file.WriteString(record)
 
 	if err != nil {
 		logs.LogError(err)
@@ -50,7 +45,6 @@ func (f *FilePersistence) Save(operation string, k int, value string) {
 	}
 }
 
-func buildRecord(operation string, k int, value string) []byte {
-	s := fmt.Sprintf("%s %d %s %s", operation, k, value, time.Now().String())
-	return []byte(s)
+func buildRecord(operation string, k int, value string) string {
+	return fmt.Sprintf("%s,%d,%s,%d\n", operation, k, value, time.Now().Unix())
 }

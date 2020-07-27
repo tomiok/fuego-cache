@@ -20,8 +20,6 @@ type cache struct {
 	cache *fuego
 	//read and write lock.
 	lock sync.RWMutex
-	//cache configuration given in yaml file.
-	config FuegoConfig
 
 	persist persistence.Persist
 
@@ -29,13 +27,15 @@ type cache struct {
 }
 
 func NewCache(config FuegoConfig) *cache {
+	filePersist := persistence.FilePersistence{File: config.FileLocation}
+
 	return &cache{
 		cache: &fuego{
 			entries: make(map[int]fuegoValue),
 		},
 		lock:   sync.RWMutex{},
-		config: config,
 		diskPersistence: config.DiskPersistence,
+		persist: &filePersist,
 	}
 }
 
