@@ -20,9 +20,9 @@ type cache struct {
 	cache *fuego
 	//read and write lock.
 	lock sync.RWMutex
-
+	//persist interface
 	persist persistence.Persist
-
+	//shortcut for persistence in disk boolean property
 	diskPersistence bool
 }
 
