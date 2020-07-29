@@ -18,11 +18,12 @@ func main() {
 		s := tcpServer.New("localhost:9919")
 		s.OnNewMessage(func(c *tcpServer.Client, message string) {
 			operationMessage := cache.NewFuegoMessage(message)
-			ops := operationMessage.Compute(fuegoInstance)
-			if ops != nil {
-				response := ops.Apply()
-				_ = c.Send(response.Response + "\n")
+			ops, err := operationMessage.Compute(fuegoInstance)
+			if err != nil {
+				return
 			}
+			response := ops.Apply()
+			_ = c.Send(response.Response + "\n")
 		})
 
 		s.Listen()
@@ -46,12 +47,12 @@ func main() {
 		s.PrintBanner()
 		s.OnNewMessage(func(message string) string {
 			operationMessage := cache.NewFuegoMessage(message)
-			ops := operationMessage.Compute(fuegoInstance)
-			if ops != nil {
-				return ops.Apply().Response
+			ops, err := operationMessage.Compute(fuegoInstance)
+			if err != nil {
+				return operationMessage.ErrResponse
 			}
+			return ops.Apply().Response
 
-			return "nil"
 		})
 		s.Listen()
 	}

@@ -28,15 +28,16 @@ func TestMessage_Compute(t *testing.T) {
 	fuegoCache := NewCache(defaultConfigs())
 	msg := NewFuegoMessage(correctMessageSet)
 
-	res := msg.Compute(fuegoCache).Apply()
-
+	operation, _ := msg.Compute(fuegoCache)
+	res := operation.Apply()
 	if res.Response != "OK" && fuegoCache.Count() != 1 {
 		t.Fail()
 	}
 
 	msg = NewFuegoMessage(correctMessageGet)
 
-	res = msg.Compute(fuegoCache).Apply()
+	operation, _ = msg.Compute(fuegoCache)
+	res = operation.Apply()
 
 	if res.Response != "1" {
 		t.Fail()
@@ -46,9 +47,9 @@ func TestMessage_Compute(t *testing.T) {
 func Test_Compute_incorrectMessage(t *testing.T) {
 	fuegoCache := NewCache(defaultConfigs())
 	msg := NewFuegoMessage(incorrectMessage)
-	res := msg.Compute(fuegoCache)
+	operation, err := msg.Compute(fuegoCache)
 
-	if res != nil {
+	if operation != nil && err == nil {
 		t.Fail()
 	}
 

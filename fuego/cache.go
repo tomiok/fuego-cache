@@ -10,6 +10,7 @@ import (
 const (
 	get         = "GET"
 	set         = "SET"
+	del      = "DELETE"
 	responseOK  = "ok"
 	responseNil = "nil"
 )
@@ -67,7 +68,7 @@ func (c *cache) SetOne(k interface{}, v string, ttl ...int) (string, error) {
 	c.lock.Lock()
 	c.cache.entries[e.key] = fuegoValue{value: e.object.value, ttl: e.object.ttl}
 	if c.diskPersistence {
-		c.persist.Save("set", e.key, e.object.value)
+		c.persist.Save(get, e.key, e.object.value)
 	}
 
 	c.lock.Unlock()
@@ -108,7 +109,7 @@ func (c *cache) DeleteOne(key interface{}) string {
 	if ok {
 		delete(c.cache.entries, hashKey)
 		if c.diskPersistence {
-			c.persist.Save("del", hashKey, "") //value does not matter in delete operation
+			c.persist.Save(del, hashKey, "") //value does not matter in delete operation
 		}
 		c.lock.RUnlock()
 		return responseOK
