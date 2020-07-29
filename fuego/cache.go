@@ -33,9 +33,9 @@ func NewCache(config FuegoConfig) *cache {
 		cache: &fuego{
 			entries: make(map[int]fuegoValue),
 		},
-		lock:   sync.RWMutex{},
+		lock:            sync.RWMutex{},
 		diskPersistence: config.DiskPersistence,
-		persist: &filePersist,
+		persist:         &filePersist,
 	}
 }
 
@@ -117,6 +117,7 @@ func (c *cache) DeleteOne(key interface{}) string {
 	return responseNil
 }
 
+//Count will show how many elements are in the cache (all the nodes)
 func (c *cache) Count() int {
 	return len(c.cache.entries)
 }
