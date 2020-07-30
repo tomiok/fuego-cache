@@ -3,6 +3,22 @@ package cache
 //BulkGet will return all the keys and return the value if it is found, otherwise a fake response with an error.
 func (c *cache) BulkGet(keys []interface{}) []BulkGetResponse {
 	var res []BulkGetResponse
+	for _, k := range keys {
+		val, err := c.GetOne(k)
+		var getResponse BulkGetResponse
+		if err != nil {
+			getResponse = BulkGetResponse{
+				Value: responseNil,
+				Err:   true,
+			}
+		} else {
+			getResponse = BulkGetResponse{
+				Value: val,
+				Err:   false,
+			}
+		}
+		res = append(res, getResponse)
+	}
 
 	return res
 }
