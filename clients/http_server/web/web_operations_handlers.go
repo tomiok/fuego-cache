@@ -17,8 +17,7 @@ func (o *OperationsHandler) GetValueHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		key := strings.TrimPrefix(r.URL.Path, GetUrl)
-		var _key interface{}
-		_key = key
+		var _key interface{} = key
 		res, err := o.GetCallback(_key)
 
 		//when a response is with error true and value is nil, it means that the key is not present in the cache
