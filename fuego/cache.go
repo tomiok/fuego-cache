@@ -10,7 +10,7 @@ import (
 const (
 	get         = "GET"
 	set         = "SET"
-	del      = "DELETE"
+	del         = "DELETE"
 	responseOK  = "ok"
 	responseNil = "nil"
 )

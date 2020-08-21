@@ -15,7 +15,7 @@ type Message struct {
 func NewFuegoMessage(msg string) *Message {
 	return &Message{
 		InputMessage: strings.TrimSuffix(msg, "\n"),
-		ErrResponse: responseNil,
+		ErrResponse:  responseNil,
 	}
 }
 
