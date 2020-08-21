@@ -35,7 +35,7 @@ func fire() string {
                     .*.........     `
 }
 
-func symbol() string {
+func _() string {
 	s := `
 
 				    xxxxxxx

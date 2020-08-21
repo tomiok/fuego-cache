@@ -31,6 +31,7 @@ func Test_TCPServer(t *testing.T) {
 
 	if conn == nil {
 		t.Fail()
+		return
 	}
 
 	_, err = conn.Write([]byte("hello dude. \n"))
