@@ -10,7 +10,7 @@ Need different "modes" if you need a TCP plain connection or a web server, add t
 MODE=http as you wish, otherwise the std client will show up.
 
 ### Installation
-TDB
+No further installation needed, just go get github.com/tomiok/fuego-cache
 
 ### Modes
 #### Operations in HTTP mode
