@@ -6,8 +6,7 @@ Fuego cache is a concurrent hashed key-value pair written 100% in Golang. Could 
 
 ### Introduction
 Just need to deploy the fuego instance locally or in a cloud provider and connect with a tcp client or as a web server.
-Need different "modes" if you need a TCP plain connection or a web server, add the environment variable MODE=tcp or
-MODE=http as you wish, otherwise the std client will show up.
+Need different "modes" if you need a TCP plain connection or a web server, just add it in the json config file, located in the root.
 
 ### Installation
 No further installation needed, just go get github.com/tomiok/fuego-cache
