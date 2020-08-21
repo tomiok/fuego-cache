@@ -11,39 +11,10 @@ Need different "modes" if you need a TCP plain connection or a web server, just 
 ### Installation
 No further installation needed, just go get github.com/tomiok/fuego-cache
 
-### Modes
-#### Operations in HTTP mode
+### Build
+`make build`
+  
+### Run
+`make run`
 
-1. Add a value
-
-  URL: ```/fuego```
-  
-  Method: POST
-  
-  Body: 
-  ```json
-        {
-          "key" : "someKey",
-          "value" : "someValue"
-        }
-```
-        
-  Response: HTTP status = 201
-
-2. Get a Value
-
-  URL: ```/fuego/{key}```
-  
-  Method: GET
-  
-  Response:
-  ```json
-        {
-          "key" : "someKey",
-          "value" : "someValue"
-        }
-```
-        
-  status = 200
-  
 ------------------------------------------------------------
