@@ -12,9 +12,9 @@ func Test_hashing(t *testing.T) {
 		Val int
 	}{Val: 1}
 
-	h1 := Apply(val1)
-	h2 := Apply(val2)
-	h3 := Apply(val3)
+	h1 := ApplyHash(val1)
+	h2 := ApplyHash(val2)
+	h3 := ApplyHash(val3)
 
 	if h1 == h2 {
 		t.Fail()

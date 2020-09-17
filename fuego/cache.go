@@ -79,12 +79,12 @@ func (c *cache) SetOne(k interface{}, v string, ttl ...int) (string, error) {
 //value is not expired. Otherwise, the an error will be returned.
 func (c *cache) GetOne(key interface{}) (string, error) {
 	c.lock.RLock()
-	hashedKey := Apply(key)
+	hashedKey := ApplyHash(key)
 	val, ok := c.cache.entries[hashedKey]
 
 	if ok {
 		if ttl := val.ttl; ttl > 0 { // when TTL is negative, the entry will not expire
-			if time.Now().Unix() < ttl { // TTL bigger means that is not expired
+			if time.Now().Unix()  < ttl { // TTL bigger means that is not expired
 				c.lock.RUnlock()
 				return val.value, nil
 			}
@@ -103,7 +103,7 @@ func (c *cache) GetOne(key interface{}) (string, error) {
 //DeleteOne will delete the entry given a key, returns "ok" if is deleted, otherwise "nil".
 func (c *cache) DeleteOne(key interface{}) string {
 	c.lock.RLock()
-	hashKey := Apply(key)
+	hashKey := ApplyHash(key)
 	_, ok := c.cache.entries[hashKey]
 
 	if ok {
@@ -126,7 +126,7 @@ func (c *cache) Count() int {
 //toEntry convert key value interfaces into a system Entry.
 func toEntry(key interface{}, value string, ttl int) entry {
 	// client add a TTL into the entry
-	hashedKey := Apply(key)
+	hashedKey := ApplyHash(key)
 	if ttl > 0 {
 		return entry{
 			key: hashedKey,
