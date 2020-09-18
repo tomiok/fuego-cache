@@ -42,7 +42,6 @@ func (c *cache) BulkSet(entries []entry) BulkResponse {
 //BulkDelete will delete all the keys in the cache and return if the response showing if any error occurred.
 func (c *cache) BulkDelete(keys []interface{}) BulkResponse {
 	var res BulkResponse
-
 	for _, key := range keys {
 		c.DeleteOne(key)
 	}

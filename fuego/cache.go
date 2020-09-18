@@ -57,6 +57,10 @@ type fuegoValue struct {
 	ttl   int64
 }
 
+func (c *cache) Clear() {
+	c.cache.entries = make(map[int]fuegoValue)
+}
+
 //SetOne will add an entry into the key-value store.
 func (c *cache) SetOne(k interface{}, v string, ttl ...int) (string, error) {
 	expiration := -1
@@ -84,7 +88,7 @@ func (c *cache) GetOne(key interface{}) (string, error) {
 
 	if ok {
 		if ttl := val.ttl; ttl > 0 { // when TTL is negative, the entry will not expire
-			if time.Now().Unix()  < ttl { // TTL bigger means that is not expired
+			if time.Now().Unix() < ttl { // TTL bigger means that is not expired
 				c.lock.RUnlock()
 				return val.value, nil
 			}
