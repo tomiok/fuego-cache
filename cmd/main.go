@@ -2,8 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/tomiok/fuego-cache/clients/http_server"
-	"github.com/tomiok/fuego-cache/clients/http_server/web"
+	"github.com/tomiok/fuego-cache/clients/httpserver"
 	"github.com/tomiok/fuego-cache/clients/stdio_client"
 	"github.com/tomiok/fuego-cache/clients/tcp_server"
 	"github.com/tomiok/fuego-cache/fuego"
@@ -29,7 +28,7 @@ func main() {
 		s.Listen()
 	} else if config.Mode == "http" {
 		addr := fmt.Sprintf(":%s", config.WebPort)
-		api := httpServer.NewHTTPApi(addr, httpServer.Services{Ops: &web.OperationsHandler{
+		api := httpServer.NewHTTPApi(addr, httpServer.Services{Ops: &httpServer.OperationsHandler{
 			GetCallback: func(s interface{}) (string, error) {
 				return fuegoInstance.GetOne(s)
 			},

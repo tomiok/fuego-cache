@@ -23,7 +23,6 @@ func (c *cache) BulkGet(keys []interface{}) []BulkGetResponse {
 	return res
 }
 
-//TODO finish bulks
 //BulkSet will get all the entries and return if the operation was successful or not and the number of errors.
 func (c *cache) BulkSet(entries []entry) BulkResponse {
 	var res BulkResponse

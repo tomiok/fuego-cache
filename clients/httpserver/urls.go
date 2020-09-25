@@ -1,4 +1,4 @@
-package web
+package httpServer
 
 import "net/http"
 
@@ -7,6 +7,7 @@ const (
 	SetUrl    = "/fuego/set"
 	DeleteUrl = "/fuego/del/"
 
+	// GET method is the default one
 	DeleteMethod = "DELETE"
 	PostMethod   = "POST"
 )

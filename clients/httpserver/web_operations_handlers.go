@@ -1,4 +1,4 @@
-package web
+package httpServer
 
 import (
 	"encoding/json"

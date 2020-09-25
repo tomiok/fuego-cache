@@ -1,7 +1,6 @@
 package httpServer
 
 import (
-	"github.com/tomiok/fuego-cache/clients/http_server/web"
 	"net/http"
 )
 
@@ -10,12 +9,12 @@ type Api struct {
 }
 
 type Services struct {
-	Ops *web.OperationsHandler
+	Ops *OperationsHandler
 }
 
 func NewHTTPApi(addr string, services Services) *Api {
 	mux := http.NewServeMux()
-	web.AddRoutes(services.Ops, mux)
+	AddRoutes(services.Ops, mux)
 
 	return &Api{Server: NewHTTPServer(addr, mux)}
 }
