@@ -45,6 +45,19 @@ func Test_SetAndGetOne(t *testing.T) {
 	}
 }
 
+func Test_nothingInCache(t *testing.T) {
+	fuegoCache := NewCache(defaultConfigs())
+
+	_, _ = fuegoCache.SetOne(1, "value")
+
+	_, err := fuegoCache.GetOne(2)
+
+	if err == nil {
+		t.Error("it is supposed to be empty")
+		t.Fail()
+	}
+}
+
 func Test_DeleteOne(t *testing.T) {
 	fuegoCache := NewCache(defaultConfigs())
 

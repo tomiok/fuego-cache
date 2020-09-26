@@ -21,10 +21,10 @@ type cache struct {
 	cache *fuego
 	//read and write lock.
 	lock sync.RWMutex
-	//persist interface
-	persist persistence.Persist
 	//shortcut for persistence in disk boolean property
 	diskPersistence bool
+	//persist interface - in memory or persistent cache
+	persist persistence.Persist
 }
 
 func NewCache(config FuegoConfig) *cache {
@@ -45,16 +45,16 @@ type fuego struct {
 	entries map[int]fuegoValue
 }
 
+//fuegoValue is the actual value to store and the ttl.
+type fuegoValue struct {
+	value string
+	ttl   int64 // time to live in seconds
+}
+
 //FuegoEntry is the cache entry, composed by the key and the fuego value, which contains the value to store and the ttl.
 type entry struct {
 	key    int
 	object fuegoValue
-}
-
-//fuegoValue is the actual value to store and the ttl.
-type fuegoValue struct {
-	value string
-	ttl   int64
 }
 
 func (c *cache) Clear() {
@@ -130,10 +130,10 @@ func (c *cache) Count() int {
 //toEntry convert key value interfaces into a system Entry.
 func toEntry(key interface{}, value string, ttl int) entry {
 	// client add a TTL into the entry
-	hashedKey := ApplyHash(key)
+	hashcode := ApplyHash(key)
 	if ttl > 0 {
 		return entry{
-			key: hashedKey,
+			key: hashcode,
 			object: fuegoValue{
 				value: value,
 				ttl:   int64(ttl) + time.Now().Unix(),
@@ -142,7 +142,7 @@ func toEntry(key interface{}, value string, ttl int) entry {
 	}
 
 	return entry{
-		key: hashedKey,
+		key: hashcode,
 		object: fuegoValue{
 			value: value,
 			ttl:   -1,

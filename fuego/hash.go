@@ -23,10 +23,10 @@ func ApplyHash(i interface{}) int {
 		return 0
 	}
 	byteValues := buf.Bytes()
-	var index int
+	var hashcode int
 	for i, v := range byteValues {
-		index += prime*i + int(v)%m
+		hashcode += prime*i + int(v)%m
 	}
 
-	return index
+	return hashcode
 }
