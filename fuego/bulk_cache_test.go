@@ -24,7 +24,7 @@ func Test_bulkGet(t *testing.T) {
 }
 
 func Test_bulkSet(t *testing.T) {
-	_cache.BulkSet([]entry{{
+	_cache.BulkSet(BulkEntry{entries: []entry{{
 		key: 1,
 		object: fuegoValue{
 			value: "1",
@@ -39,7 +39,7 @@ func Test_bulkSet(t *testing.T) {
 		object: fuegoValue{
 			value: "3",
 		},
-	}})
+	}}})
 	count := _cache.Count()
 	if count != 3 {
 		t.Error("the count is " + strconv.Itoa(count))

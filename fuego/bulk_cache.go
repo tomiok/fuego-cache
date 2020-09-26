@@ -24,11 +24,11 @@ func (c *cache) BulkGet(keys []interface{}) []BulkGetResponse {
 }
 
 //BulkSet will get all the entries and return if the operation was successful or not and the number of errors.
-func (c *cache) BulkSet(entries []entry) BulkResponse {
+func (c *cache) BulkSet(be BulkEntry) BulkResponse {
 	var res BulkResponse
 	count := 0
-	for _, e := range entries {
-		_, err := c.SetOne(e.key, e.object.value, int(e.object.ttl))
+	for _, e := range be.entries {
+		_, err := c.SetOne(e.key, e.value, e.ttl)
 		if err != nil {
 			count = 1
 			break
@@ -55,4 +55,24 @@ type BulkGetResponse struct {
 type BulkResponse struct {
 	Err     bool   `json:"err"`
 	Message string `json:"message,omitempty"`
+}
+
+type BulkEntry struct {
+	entries []e
+}
+
+type e struct {
+	key   interface{}
+	value string
+	ttl   int
+}
+
+func (be *BulkEntry) Add(key interface{}, value string, ttl int) {
+	e := e{
+		key:   key,
+		value: value,
+		ttl:   ttl,
+	}
+
+	be.entries = append(be.entries, e)
 }
