@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/tomiok/fuego-cache/clients/httpserver"
-	"github.com/tomiok/fuego-cache/clients/stdio_client"
-	"github.com/tomiok/fuego-cache/clients/tcp_server"
+	"github.com/tomiok/fuego-cache/clients/stdioclient"
+	"github.com/tomiok/fuego-cache/clients/tcpserver"
 	"github.com/tomiok/fuego-cache/fuego"
 	"github.com/tomiok/fuego-cache/logs"
 )
