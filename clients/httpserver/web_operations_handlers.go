@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	cache "github.com/tomiok/fuego-cache/fuego"
 	"github.com/tomiok/fuego-cache/internal"
-	"github.com/tomiok/fuego-cache/logs"
 	"net/http"
 	"strings"
 )
@@ -23,10 +22,7 @@ func (o *OperationsHandler) GetValueHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		key := strings.TrimPrefix(r.URL.Path, GetUrl)
-		logs.Info(cache.ApplyHash(key))
-		var _key interface{} = key
-		res, err := o.GetCallback(_key)
-
+		res, err := o.GetCallback(key)
 		//when a response is with error true and value is nil, it means that the key is not present in the cache
 		_ = json.NewEncoder(w).Encode(HTTPRes{Response: res, Err: err != nil})
 	}
