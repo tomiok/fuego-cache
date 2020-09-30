@@ -28,10 +28,10 @@ func main() {
 		s.Listen()
 	} else if config.Mode == "http" {
 		addr := fmt.Sprintf(":%s", config.WebPort)
-		api := httpServer.NewHTTPApi(
+		api := httpserver.NewHTTPApi(
 			addr,
-			httpServer.Services{
-				Ops: &httpServer.OperationsHandler{
+			httpserver.Services{
+				Ops: &httpserver.OperationsHandler{
 					GetCallback: func(s interface{}) (string, error) {
 						return fuegoInstance.GetOne(s)
 					},
