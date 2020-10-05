@@ -37,13 +37,21 @@ func (o *OperationsHandler) SetValueHandler() http.HandlerFunc {
 			var b SetEntryCMD
 			err := json.NewDecoder(body).Decode(&b)
 
+			defer func() {
+				w.WriteHeader(500)
+
+				if r := recover(); r != nil {
+					_ = json.NewEncoder(w).Encode(HTTPError{Msg: "ERROR DUDE"})
+				}
+
+			}()
+
 			if err != nil || b.Key == "" {
 				http.Error(w, "cannot process current request", http.StatusBadRequest)
 				return
 			}
 
 			res, err := o.SetCallback(b.Key, b.Value, b.TTL)
-
 			internal.OnCloseError(body.Close)
 			_ = json.NewEncoder(w).Encode(HTTPResponse{Response: res, Err: err != nil})
 		} else {
@@ -101,6 +109,10 @@ type BulkSetCMD struct {
 type HTTPResponse struct {
 	Response string `json:"response"`
 	Err      bool   `json:"err"`
+}
+
+type HTTPError struct {
+	Msg string `json:"message"`
 }
 
 func toBulkEntry(body []BulkSetCMD) cache.BulkEntry {
