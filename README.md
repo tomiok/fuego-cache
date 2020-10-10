@@ -9,7 +9,7 @@ Just need to deploy the fuego instance locally or in a cloud provider and connec
 Need different "modes" if you need a TCP plain connection or a web server, just add it in the json config file, located in the root.
 
 ### Installation
-No further installation needed, just go get github.com/tomiok/fuego-cache
+No further installation needed, just `go get github.com/tomiok/fuego-cache`
 
 ### Build
 `make build`
