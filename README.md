@@ -17,4 +17,7 @@ No further installation needed, just `go get github.com/tomiok/fuego-cache`
 ### Run
 `make run`
 
+### Docker
+SID
+
 ------------------------------------------------------------
