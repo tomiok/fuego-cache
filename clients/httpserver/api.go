@@ -14,8 +14,18 @@ const (
 	PostMethod   = "POST"
 )
 
-// Web API structure
+// custom handler generic type
+type FuegoHandler func(w http.ResponseWriter, r *http.Request) error
 
+func (f FuegoHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if err := f(w, r); err != nil {
+		if err.Error() == "" {
+
+		}
+	}
+}
+
+// Web API structure
 type Api struct {
 	Server *FuegoHTTPServer
 }
@@ -36,9 +46,9 @@ func (a *Api) Listen() {
 }
 
 func AddRoutes(o *OperationsHandler, mux *http.ServeMux) {
-	mux.HandleFunc(GetUrl, o.GetValueHandler())
-	mux.HandleFunc(SetUrl, o.SetValueHandler())
-	mux.HandleFunc(DeleteUrl, o.DeleteValueHandler())
+	mux.Handle(GetUrl, FuegoHandler(o.GetValueHandler))
+	mux.Handle(SetUrl, FuegoHandler(o.SetValueHandler))
+	mux.Handle(DeleteUrl, FuegoHandler(o.DeleteValueHandler))
 	// bulk operations
-	mux.HandleFunc(BulkSetUrl, o.BulkSetHandler())
+	mux.Handle(BulkSetUrl, FuegoHandler(o.BulkSetHandler))
 }

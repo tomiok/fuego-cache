@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"encoding/json"
+	"errors"
 	cache "github.com/tomiok/fuego-cache/fuego"
 	"github.com/tomiok/fuego-cache/internal"
 	"net/http"
@@ -18,82 +19,73 @@ type OperationsHandler struct {
 	BulkDeleteCallback func(keys []interface{})
 }
 
-func (o *OperationsHandler) GetValueHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		key := strings.TrimPrefix(r.URL.Path, GetUrl)
-		res, err := o.GetCallback(key)
-		//when a response is with error true and value is nil, it means that the key is not present in the cache
-		_ = json.NewEncoder(w).Encode(HTTPResponse{Response: res, Err: err != nil})
-	}
+func (o *OperationsHandler) GetValueHandler(w http.ResponseWriter, r *http.Request) error {
+	w.Header().Set("Content-Type", "application/json")
+	key := strings.TrimPrefix(r.URL.Path, GetUrl)
+	res, err := o.GetCallback(key)
+	//when a response is with error true and value is nil, it means that the key is not present in the cache
+	_ = json.NewEncoder(w).Encode(HTTPResponse{Response: res, Err: err != nil})
+	return nil
 }
 
-func (o *OperationsHandler) SetValueHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
+func (o *OperationsHandler) SetValueHandler(w http.ResponseWriter, r *http.Request) error {
+	w.Header().Set("Content-Type", "application/json")
 
-		if r.Method == PostMethod {
-			body := r.Body
-			var b SetEntryCMD
-			err := json.NewDecoder(body).Decode(&b)
+	if r.Method == PostMethod {
+		body := r.Body
+		var b SetEntryCMD
+		err := json.NewDecoder(body).Decode(&b)
 
-			defer func() {
-				w.WriteHeader(500)
+		defer func() {
+			w.WriteHeader(500)
 
-				if r := recover(); r != nil {
-					_ = json.NewEncoder(w).Encode(HTTPError{Msg: "ERROR DUDE"})
-				}
-
-			}()
-
-			if err != nil || b.Key == "" {
-				http.Error(w, "cannot process current request", http.StatusBadRequest)
-				return
+			if r := recover(); r != nil {
+				_ = json.NewEncoder(w).Encode(HTTPError{Msg: "ERROR DUDE"})
 			}
 
-			res, err := o.SetCallback(b.Key, b.Value, b.TTL)
-			internal.OnCloseError(body.Close)
-			_ = json.NewEncoder(w).Encode(HTTPResponse{Response: res, Err: err != nil})
-		} else {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
+		}()
+
+		if err != nil || b.Key == "" {
+			return err
 		}
+
+		res, err := o.SetCallback(b.Key, b.Value, b.TTL)
+		internal.OnCloseError(body.Close)
+		_ = json.NewEncoder(w).Encode(HTTPResponse{Response: res, Err: err != nil})
+		return nil
+	} else {
+		return errors.New("methodNotAllowed")
 	}
 }
 
-func (o *OperationsHandler) DeleteValueHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		if r.Method == DeleteMethod {
-			id := strings.TrimPrefix(r.URL.Path, DeleteUrl)
-			deleted, err := o.DeleteCallback(id)
-			_ = json.NewEncoder(w).Encode(HTTPResponse{Response: deleted, Err: err != nil})
-		} else {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
+func (o *OperationsHandler) DeleteValueHandler(w http.ResponseWriter, r *http.Request) error {
+	w.Header().Set("Content-Type", "application/json")
+	if r.Method == DeleteMethod {
+		id := strings.TrimPrefix(r.URL.Path, DeleteUrl)
+		deleted, err := o.DeleteCallback(id)
+		_ = json.NewEncoder(w).Encode(HTTPResponse{Response: deleted, Err: err != nil})
+		return nil
+	} else {
+		return errors.New("methodNotAllowed")
 	}
 }
 
-func (o *OperationsHandler) BulkSetHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == PostMethod {
-			var cmd []BulkSetCMD
-			body := r.Body
-			defer internal.OnCloseError(body.Close)
-			_ = json.NewDecoder(body).Decode(&cmd)
-			res := o.BulkSetCallback(toBulkEntry(cmd))
+func (o *OperationsHandler) BulkSetHandler(w http.ResponseWriter, r *http.Request) error {
+	if r.Method == PostMethod {
+		var cmd []BulkSetCMD
+		body := r.Body
+		defer internal.OnCloseError(body.Close)
+		_ = json.NewDecoder(body).Decode(&cmd)
+		res := o.BulkSetCallback(toBulkEntry(cmd))
+		_ = json.NewEncoder(w).Encode(&res)
 
-			_ = json.NewEncoder(w).Encode(&res)
-		} else {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
+		return nil
+	} else {
+		return errors.New("methodNotAllowed")
 	}
 }
 
 // HTTP response and request helpers
-
 type SetEntryCMD struct {
 	Key   interface{} `json:"key"`
 	Value string      `json:"value"`
