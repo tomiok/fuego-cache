@@ -54,12 +54,23 @@ func Test_Compute_incorrectMessage(t *testing.T) {
 	}
 }
 
-func Test_getInQuotes(t *testing.T) {
-	s := "hey dude \"how are you\""
-	expected := "how are you"
-	res := getInQuotes(s)
+func Test_fetchMessage(t *testing.T) {
+	s := "set hello  \"how are you\""
+	expectedOperation := "set"
+	expectedValue := "how are you"
+	expectedKey := "hello"
+	operation, key, value := fetchMessage(s)
 
-	if res != expected {
+	if operation != expectedOperation {
 		t.Fail()
 	}
+
+	if key != expectedKey {
+		t.Fail()
+	}
+
+	if value != expectedValue {
+		t.Fail()
+	}
+
 }

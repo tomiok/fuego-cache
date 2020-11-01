@@ -5,7 +5,11 @@ import (
 	"strings"
 )
 
-const space = " "
+const (
+	space     = " "
+	backSlash = "\""
+	intro     = "\n"
+)
 
 type Message struct {
 	InputMessage string
@@ -14,7 +18,7 @@ type Message struct {
 
 func NewFuegoMessage(msg string) *Message {
 	return &Message{
-		InputMessage: strings.TrimSuffix(msg, "\n"),
+		InputMessage: strings.TrimSuffix(msg, intro),
 		ErrResponse:  responseNil,
 	}
 }
@@ -56,15 +60,23 @@ func (m *Message) Compute(cache *cache) (FuegoOps, error) {
 	return nil, errors.New("operation not supported")
 }
 
-func getInQuotes(msg string) string {
-	ss := strings.SplitAfter(msg, "\"")
+// fetchMessage is the function that takes the input from the CLI and separate the message in
+// 3 strings. OPERATION, KEY, VALUE, in that order. The inpunt message should take restrictively some rules. Those
+// rules are: {operation} {key} {double quoted value}, only one space is the separation and the value is always quoted.
+func fetchMessage(msg string) (string, string, string) {
+	ss := strings.SplitAfter(msg, backSlash)
 	l := len(ss)
 	if l == 0 {
-		return ""
+		return "", "", ""
 	}
 
 	value := ss[1]
-	value = strings.TrimSuffix(value, "\"")
+	value = strings.TrimSuffix(value, backSlash)
+	operation, key := getOperationAndKey(ss[0])
+	return operation, key, value
+}
 
-	return value
+func getOperationAndKey(s string) (string, string) {
+	ss := strings.Split(s, space)
+	return ss[0], ss[1]
 }
