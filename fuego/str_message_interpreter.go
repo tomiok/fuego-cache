@@ -11,9 +11,18 @@ const (
 	intro       = "\n"
 )
 
+type messageType string
+
 type Message struct {
 	InputMessage string
 	ErrResponse  string
+}
+
+type MessageOperator struct {
+	cacheOperation messageType // READ, WRITE operation
+	operator       string      // set, get, etc...
+	key            string      // the key for the cache
+	value          string      // the value for the cache entry, optional for read operations
 }
 
 func NewFuegoMessage(msg string) *Message {
@@ -61,17 +70,46 @@ func (m *Message) Compute(cache *cache) (FuegoOps, error) {
 }
 
 // fetchMessage is the function that takes the input from the CLI and separate the message in
-// 3 strings. OPERATION, KEY, VALUE, in that order. The input message should take restrictively some rules. Those
+// 3 strings. OPERATION, KEY, VALUE, in that order when is a WRITING message, for the READ message, only operation
+// and key are necessary. The input message should take restrictively some rules. Those
 // rules are: {operation} {key} {double quoted value}, only one space is the separation and the value is always quoted.
-func fetchMessage(msg string) (string, string, string) {
+func fetchMessage(msg string) (*MessageOperator, error) {
 	parsed := strings.SplitAfter(msg, doubleQuote)
-	if len(parsed) != 3 { // should be 3 since is operation, key, value
-		return "", "", ""
+	l := len(parsed)
+	if l == 1 {
+		return getReadMessage(parsed[0])
+	}
+
+	if l != 3 { // should be 3 since is operation, key, value
+		return nil, errors.New("")
 	}
 	value := getQuotedMessage(parsed[1])
 
-	operation, key := getOperationAndKey(parsed[0])
-	return operation, key, value
+	operator, key := getOperationAndKey(parsed[0])
+	return &MessageOperator{
+		cacheOperation: "WRITE",
+		operator:       operator,
+		key:            key,
+		value:          value,
+	}, nil
+}
+
+// TODO finish this
+func getReadMessage(s string) (*MessageOperator, error) {
+	msg := strings.TrimSpace(s)
+	parsed := strings.SplitN(msg, " ", 2)
+
+	if len(parsed) != 2 {
+		return nil, errors.New("")
+	}
+
+	key := strings.TrimSpace(parsed[1])
+	return &MessageOperator{
+		cacheOperation: "READ",
+		operator:       parsed[0],
+		key:            key,
+		value:          "",
+	}, nil
 }
 
 func getQuotedMessage(s string) string {

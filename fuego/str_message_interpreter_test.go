@@ -54,23 +54,51 @@ func Test_Compute_incorrectMessage(t *testing.T) {
 	}
 }
 
-func Test_fetchMessage(t *testing.T) {
+func Test_fetchMessage_Write(t *testing.T) {
 	s := "set hello  \"how are you\""
 	expectedOperation := "set"
 	expectedValue := "how are you"
 	expectedKey := "hello"
-	operation, key, value := fetchMessage(s)
+	op, err := fetchMessage(s)
 
-	if operation != expectedOperation {
+	if err != nil {
+		t.Fatal()
+	}
+
+	if op == nil {
 		t.Fail()
 	}
 
-	if key != expectedKey {
+	if op.operator != expectedOperation {
 		t.Fail()
 	}
 
-	if value != expectedValue {
+	if op.key != expectedKey {
 		t.Fail()
 	}
 
+	if op.value != expectedValue {
+		t.Fail()
+	}
+}
+
+func Test_FetchMessage_Read(t *testing.T) {
+	msg := "get             hello"
+
+	expectedOperator := "get"
+	expectedKey := "hello"
+
+	res, err := getReadMessage(msg)
+
+	if err != nil {
+		t.Fatal()
+	}
+
+	if res.operator != expectedOperator {
+		t.Fatal()
+	}
+
+	if res.key != expectedKey {
+		t.Fatal()
+	}
 }
