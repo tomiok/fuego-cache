@@ -6,9 +6,9 @@ import (
 )
 
 const (
-	space     = " "
-	backSlash = "\""
-	intro     = "\n"
+	space       = " "
+	doubleQuote = "\""
+	intro       = "\n"
 )
 
 type Message struct {
@@ -61,19 +61,21 @@ func (m *Message) Compute(cache *cache) (FuegoOps, error) {
 }
 
 // fetchMessage is the function that takes the input from the CLI and separate the message in
-// 3 strings. OPERATION, KEY, VALUE, in that order. The inpunt message should take restrictively some rules. Those
+// 3 strings. OPERATION, KEY, VALUE, in that order. The input message should take restrictively some rules. Those
 // rules are: {operation} {key} {double quoted value}, only one space is the separation and the value is always quoted.
 func fetchMessage(msg string) (string, string, string) {
-	ss := strings.SplitAfter(msg, backSlash)
-	l := len(ss)
-	if l == 0 {
+	parsed := strings.SplitAfter(msg, doubleQuote)
+	if len(parsed) != 3 { // should be 3 since is operation, key, value
 		return "", "", ""
 	}
+	value := getQuotedMessage(parsed[1])
 
-	value := ss[1]
-	value = strings.TrimSuffix(value, backSlash)
-	operation, key := getOperationAndKey(ss[0])
+	operation, key := getOperationAndKey(parsed[0])
 	return operation, key, value
+}
+
+func getQuotedMessage(s string) string {
+	return strings.TrimSuffix(s, doubleQuote)
 }
 
 func getOperationAndKey(s string) (string, string) {
