@@ -52,5 +52,14 @@ func Test_Compute_incorrectMessage(t *testing.T) {
 	if operation != nil && err == nil {
 		t.Fail()
 	}
+}
 
+func Test_getInQuotes(t *testing.T) {
+	s := "hey dude \"how are you\""
+	expected := "how are you"
+	res := getInQuotes(s)
+
+	if res != expected {
+		t.Fail()
+	}
 }

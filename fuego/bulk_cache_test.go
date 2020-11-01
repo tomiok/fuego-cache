@@ -24,21 +24,15 @@ func Test_bulkGet(t *testing.T) {
 }
 
 func Test_bulkSet(t *testing.T) {
-	_cache.BulkSet(BulkEntry{entries: []entry{{
-		key: 1,
-		object: fuegoValue{
-			value: "1",
-		},
+	_cache.BulkSet(BulkEntry{entries: []e{{
+		key:   1,
+		value: "1",
 	}, {
-		key: 2,
-		object: fuegoValue{
-			value: "2",
-		},
+		key:   2,
+		value: "2",
 	}, {
-		key: 3,
-		object: fuegoValue{
-			value: "3",
-		},
+		key:   3,
+		value: "3",
 	}}})
 	count := _cache.Count()
 	if count != 3 {

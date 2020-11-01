@@ -55,3 +55,16 @@ func (m *Message) Compute(cache *cache) (FuegoOps, error) {
 
 	return nil, errors.New("operation not supported")
 }
+
+func getInQuotes(msg string) string {
+	ss := strings.SplitAfter(msg, "\"")
+	l := len(ss)
+	if l == 0 {
+		return ""
+	}
+
+	value := ss[1]
+	value = strings.TrimSuffix(value, "\"")
+
+	return value
+}
