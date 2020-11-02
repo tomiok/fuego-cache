@@ -6,9 +6,11 @@ import (
 )
 
 const (
-	space       = " "
-	doubleQuote = "\""
-	intro       = "\n"
+	space          = " "
+	doubleQuote    = "\""
+	intro          = "\n"
+	readOperation  = "READ"
+	writeOperation = "WRITE"
 )
 
 type messageType string
@@ -87,7 +89,7 @@ func fetchMessage(msg string) (*MessageOperator, error) {
 
 	operator, key := getOperationAndKey(parsed[0])
 	return &MessageOperator{
-		cacheOperation: "WRITE",
+		cacheOperation: writeOperation,
 		operator:       operator,
 		key:            key,
 		value:          value,
@@ -97,7 +99,7 @@ func fetchMessage(msg string) (*MessageOperator, error) {
 // TODO finish this
 func getReadMessage(s string) (*MessageOperator, error) {
 	msg := strings.TrimSpace(s)
-	parsed := strings.SplitN(msg, " ", 2)
+	parsed := strings.SplitN(msg, space, 2)
 
 	if len(parsed) != 2 {
 		return nil, errors.New("")
@@ -105,10 +107,9 @@ func getReadMessage(s string) (*MessageOperator, error) {
 
 	key := strings.TrimSpace(parsed[1])
 	return &MessageOperator{
-		cacheOperation: "READ",
+		cacheOperation: readOperation,
 		operator:       parsed[0],
 		key:            key,
-		value:          "",
 	}, nil
 }
 
