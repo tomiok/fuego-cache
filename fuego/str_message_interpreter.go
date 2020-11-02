@@ -11,6 +11,8 @@ const (
 	intro          = "\n"
 	readOperation  = "READ"
 	writeOperation = "WRITE"
+	readArraySize  = 2
+	writeArraySize = 3
 )
 
 type messageType string
@@ -82,8 +84,8 @@ func fetchMessage(msg string) (*MessageOperator, error) {
 		return getReadMessage(parsed[0])
 	}
 
-	if l != 3 { // should be 3 since is operation, key, value
-		return nil, errors.New("")
+	if l != writeArraySize { // should be 3 since is operation, key, value
+		return nil, errors.New("the message is not formatted properly")
 	}
 	value := getQuotedMessage(parsed[1])
 
@@ -96,16 +98,16 @@ func fetchMessage(msg string) (*MessageOperator, error) {
 	}, nil
 }
 
-// TODO finish this
 func getReadMessage(s string) (*MessageOperator, error) {
 	msg := strings.TrimSpace(s)
-	parsed := strings.SplitN(msg, space, 2)
+	parsed := strings.SplitN(msg, space, readArraySize)
 
-	if len(parsed) != 2 {
-		return nil, errors.New("")
+	if len(parsed) != readArraySize {
+		return nil, errors.New("the message is not formatted properly")
 	}
 
 	key := strings.TrimSpace(parsed[1])
+
 	return &MessageOperator{
 		cacheOperation: readOperation,
 		operator:       parsed[0],
