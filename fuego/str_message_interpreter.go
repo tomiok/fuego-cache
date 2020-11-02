@@ -24,7 +24,7 @@ type Message struct {
 
 type MessageOperator struct {
 	cacheOperation messageType // READ, WRITE operation
-	operator       string      // set, get, etc...
+	command        string      // set, get, etc...
 	key            string      // the key for the cache
 	value          string      // the value for the cache entry, optional for read operations
 }
@@ -37,27 +37,27 @@ func NewFuegoMessage(msg string) *Message {
 }
 
 func (m *Message) Compute(cache *cache) (FuegoOps, error) {
-	operation := strings.Split(m.InputMessage, space)
-	l := len(operation)
-	if l == 0 {
-		return nil, errors.New("")
+	operation, err := fetchMessage(m.InputMessage)
+
+	if err != nil {
+		return nil, errors.New("") //TODO finish this error
 	}
 
-	//read
-	if l == 2 {
-		action := operation[0]
-		if strings.ToUpper(action) != get {
+	//read - only support GET stand alone, no with multiple keys
+	if operation.cacheOperation == readOperation {
+		command := operation.command
+		if strings.ToLower(command) != get {
 			return nil, errors.New("")
 		}
 		return &ReadOperation{
-			Operation: operation[0],
-			Key:       operation[1],
+			Key:       operation.key,
 			DoGet:     cache.GetOne,
 		}, nil
 	}
 
 	//write
-	if l == 3 {
+	if operation.cacheOperation == writeOperation {
+		// TODO finish this
 		action := operation[0]
 		if strings.ToUpper(action) != set {
 			return nil, errors.New("")
@@ -92,7 +92,7 @@ func fetchMessage(msg string) (*MessageOperator, error) {
 	operator, key := getOperationAndKey(parsed[0])
 	return &MessageOperator{
 		cacheOperation: writeOperation,
-		operator:       operator,
+		command:        operator,
 		key:            key,
 		value:          value,
 	}, nil
@@ -110,7 +110,7 @@ func getReadMessage(s string) (*MessageOperator, error) {
 
 	return &MessageOperator{
 		cacheOperation: readOperation,
-		operator:       parsed[0],
+		command:        parsed[0],
 		key:            key,
 	}, nil
 }

@@ -14,7 +14,6 @@ type FuegoResponse struct {
 }
 
 type WriteOperation struct {
-	Operation string
 	Key       string
 	Value     string
 	DoAdd     addCallback
@@ -30,7 +29,6 @@ func (f *WriteOperation) Apply() FuegoResponse {
 }
 
 type ReadOperation struct {
-	Operation string
 	Key       string
 	DoGet     getCallback
 }

@@ -69,7 +69,7 @@ func Test_fetchMessage_Write(t *testing.T) {
 		t.Fail()
 	}
 
-	if op.operator != expectedOperation {
+	if op.command != expectedOperation {
 		t.Fail()
 	}
 
@@ -94,7 +94,7 @@ func Test_FetchMessage_Read(t *testing.T) {
 		t.Fatal()
 	}
 
-	if res.operator != expectedOperator {
+	if res.command != expectedOperator {
 		t.Fatal()
 	}
 
