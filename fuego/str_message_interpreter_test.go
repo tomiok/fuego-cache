@@ -7,7 +7,7 @@ import (
 const (
 	correctMessageSet = "set 1 \"1\""
 	correctMessageGet = "get 1"
-	incorrectMessage  = "incorrect"
+	incorrectMessage  = "incorrect formatting"
 )
 
 func Test_NewTCPMessageCorrectMessage(t *testing.T) {
