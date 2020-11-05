@@ -46,7 +46,7 @@ func (m *Message) Compute(cache *cache) (FuegoOps, error) {
 	//read - only support GET stand alone, no with multiple keys
 	if operation.cacheOperation == readOperation {
 		command := operation.command
-		if strings.ToLower(command) != get {
+		if strings.ToUpper(command) != get {
 			return nil, errors.New("is not a get command")
 		}
 		return &ReadOperation{
@@ -59,7 +59,7 @@ func (m *Message) Compute(cache *cache) (FuegoOps, error) {
 	if operation.cacheOperation == writeOperation {
 		// TODO finish this
 		command := operation.command
-		if strings.ToLower(command) != set {
+		if strings.ToUpper(command) != set {
 			return nil, errors.New("is not a set command")
 		}
 		return &WriteOperation{
