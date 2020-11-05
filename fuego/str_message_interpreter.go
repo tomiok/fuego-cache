@@ -50,23 +50,22 @@ func (m *Message) Compute(cache *cache) (FuegoOps, error) {
 			return nil, errors.New("")
 		}
 		return &ReadOperation{
-			Key:       operation.key,
-			DoGet:     cache.GetOne,
+			Key:   operation.key,
+			DoGet: cache.GetOne,
 		}, nil
 	}
 
 	//write
 	if operation.cacheOperation == writeOperation {
 		// TODO finish this
-		action := operation[0]
-		if strings.ToUpper(action) != set {
+		command := operation.command
+		if strings.ToLower(command) != set {
 			return nil, errors.New("")
 		}
 		return &WriteOperation{
-			Operation: operation[0],
-			Key:       operation[1],
-			Value:     operation[2],
-			DoAdd:     cache.SetOne,
+			Key:   operation.key,
+			Value: operation.value,
+			DoAdd: cache.SetOne,
 		}, nil
 	}
 
