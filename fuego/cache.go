@@ -45,6 +45,10 @@ type fuego struct {
 	entries map[int]fuegoValue
 }
 
+type InMemoryDB struct {
+	Fuego *cache
+}
+
 //fuegoValue is the actual value to store and the ttl.
 type fuegoValue struct {
 	value string
@@ -56,6 +60,7 @@ type entry struct {
 	key    int
 	object fuegoValue
 }
+
 
 func (c *cache) Clear() {
 	c.cache.entries = make(map[int]fuegoValue)
