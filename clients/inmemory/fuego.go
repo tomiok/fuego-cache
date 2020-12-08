@@ -10,11 +10,16 @@ type FuegoEmbedded interface {
 	Delete(key string) error
 	Get(key string) (string, error)
 	List() []string
+	Update(key string) error
 }
 
 // FuegoInMemory is a mode for embedded database
 type FuegoInMemory struct {
 	DB *cache.InMemoryDB
+}
+
+func (f *FuegoInMemory) Delete(key string) error {
+	return nil
 }
 
 func (f *FuegoInMemory) Insert(key, value string) error {
