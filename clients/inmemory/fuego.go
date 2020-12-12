@@ -18,6 +18,17 @@ type FuegoInMemory struct {
 	DB *cache.InMemoryDB
 }
 
+func NewInMemory() *FuegoInMemory {
+	return &FuegoInMemory{DB: &cache.InMemoryDB{
+		Fuego: cache.NewCache(cache.FuegoConfig{
+			DiskPersistence: false,
+			FileLocation:    "",
+			WebPort:         "",
+			Mode:            "",
+			InMemory:        false,
+		})}}
+}
+
 func (f *FuegoInMemory) List() []string {
 	return f.DB.Fuego.List()
 }
