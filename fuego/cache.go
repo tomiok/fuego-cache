@@ -25,6 +25,8 @@ type cache struct {
 	diskPersistence bool
 	//persist interface - in memory or persistent cache
 	persist persistence.Persist
+	//inMemory
+	inMemory bool
 }
 
 func NewCache(config FuegoConfig) *cache {
@@ -37,6 +39,7 @@ func NewCache(config FuegoConfig) *cache {
 		lock:            sync.RWMutex{},
 		diskPersistence: config.DiskPersistence,
 		persist:         &filePersist,
+		inMemory:        config.InMemory,
 	}
 }
 
@@ -61,7 +64,6 @@ type entry struct {
 	object fuegoValue
 }
 
-
 func (c *cache) Clear() {
 	c.cache.entries = make(map[int]fuegoValue)
 }
@@ -77,7 +79,7 @@ func (c *cache) SetOne(k interface{}, v string, ttl ...int) (string, error) {
 	c.lock.Lock()
 	c.cache.entries[e.key] = fuegoValue{value: e.object.value, ttl: e.object.ttl}
 	if c.diskPersistence {
-		c.persist.Save(get, e.key, e.object.value)
+		c.persist.Save(get, e.key, e.object.value, c.inMemory)
 	}
 
 	c.lock.Unlock()
@@ -118,13 +120,23 @@ func (c *cache) DeleteOne(key interface{}) string {
 	if ok {
 		delete(c.cache.entries, hashKey)
 		if c.diskPersistence {
-			c.persist.Save(del, hashKey, "") //value does not matter in delete operation
+			c.persist.Save(del, hashKey, "", c.inMemory) //value does not matter in delete operation
 		}
 		c.lock.RUnlock()
 		return responseOK
 	}
 	c.lock.RUnlock()
 	return responseNil
+}
+
+func (c *cache) List() []string {
+	entries := c.cache.entries
+	var values []string
+	for _, v := range entries {
+		values = append(values, v.value)
+	}
+
+	return values
 }
 
 //Count will show how many elements are in the cache (all the nodes)

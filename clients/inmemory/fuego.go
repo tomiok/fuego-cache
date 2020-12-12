@@ -7,10 +7,10 @@ import (
 
 type FuegoEmbedded interface {
 	Insert(key, value string) error
-	Delete(key string) error
+	Delete(key string) string
 	Get(key string) (string, error)
 	List() []string
-	Update(key string) error
+	// Update(key string) error
 }
 
 // FuegoInMemory is a mode for embedded database
@@ -18,8 +18,12 @@ type FuegoInMemory struct {
 	DB *cache.InMemoryDB
 }
 
-func (f *FuegoInMemory) Delete(key string) error {
-	return nil
+func (f *FuegoInMemory) List() []string {
+	return f.DB.Fuego.List()
+}
+
+func (f *FuegoInMemory) Delete(key string) string {
+	return f.DB.Fuego.DeleteOne(key)
 }
 
 func (f *FuegoInMemory) Insert(key, value string) error {

@@ -14,6 +14,8 @@ type FuegoConfig struct {
 	WebPort string `json:"web_port"`
 	//mode - how to run the cache service, web, tcp or CLI
 	Mode string `json:"mode"`
+	//inMemory
+	InMemory bool
 }
 
 func ParseConfiguration() FuegoConfig {
