@@ -10,7 +10,7 @@ import (
 )
 
 type Persist interface {
-	Save(operation string, k int, value string, inMemory bool)
+	Save(operation string, k int, value string)
 }
 
 type Data struct {
@@ -21,9 +21,10 @@ type Data struct {
 
 type FilePersistence struct {
 	File string
+	InMemory bool
 }
 
-func (f *FilePersistence) Save(operation string, k int, value string, inMemory bool) {
+func (f *FilePersistence) Save(operation string, k int, value string) {
 	//read a file if already exists, or create a new one
 	file, err := os.OpenFile(filepath.Join(f.File), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
@@ -35,7 +36,7 @@ func (f *FilePersistence) Save(operation string, k int, value string, inMemory b
 
 	defer internal.OnCloseError(file.Close)
 
-	record := buildRecord(operation, k, value, inMemory)
+	record := buildRecord(operation, k, value, f.InMemory)
 
 	_, err = file.WriteString(record)
 

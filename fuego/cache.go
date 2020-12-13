@@ -30,7 +30,13 @@ type cache struct {
 }
 
 func NewCache(config FuegoConfig) *cache {
-	filePersist := persistence.FilePersistence{File: config.FileLocation}
+	var inMemory bool
+
+	if config.Mode == "inMemory" {
+		inMemory = true
+	}
+
+	filePersist := persistence.FilePersistence{File: config.FileLocation, InMemory: inMemory}
 
 	return &cache{
 		cache: &fuego{
@@ -39,7 +45,7 @@ func NewCache(config FuegoConfig) *cache {
 		lock:            sync.RWMutex{},
 		diskPersistence: config.DiskPersistence,
 		persist:         &filePersist,
-		inMemory:        config.InMemory,
+		inMemory:        filePersist.InMemory,
 	}
 }
 
@@ -79,7 +85,7 @@ func (c *cache) SetOne(k interface{}, v string, ttl ...int) (string, error) {
 	c.lock.Lock()
 	c.cache.entries[e.key] = fuegoValue{value: e.object.value, ttl: e.object.ttl}
 	if c.diskPersistence {
-		c.persist.Save(get, e.key, e.object.value, c.inMemory)
+		c.persist.Save(get, e.key, e.object.value)
 	}
 
 	c.lock.Unlock()
@@ -120,7 +126,7 @@ func (c *cache) DeleteOne(key interface{}) string {
 	if ok {
 		delete(c.cache.entries, hashKey)
 		if c.diskPersistence {
-			c.persist.Save(del, hashKey, "", c.inMemory) //value does not matter in delete operation
+			c.persist.Save(del, hashKey, "") //value does not matter in delete operation
 		}
 		c.lock.RUnlock()
 		return responseOK

@@ -10,8 +10,7 @@ func Test_Insert_and_get_InMemory(t *testing.T) {
 	c := cache.NewCache(cache.FuegoConfig{
 		DiskPersistence: true,
 		FileLocation:    "C:\\Users\\Tomás\\Downloads\\fuego.csv",
-		Mode:            "",
-		InMemory:        true,
+		Mode:            "inMemory",
 	})
 	fuego := FuegoInMemory{
 		DB: &cache.InMemoryDB{Fuego: c},
@@ -37,7 +36,7 @@ func Test_Insert_and_get_InMemory(t *testing.T) {
 func Test_getListOfValues(t *testing.T) {
 	c := cache.NewCache(cache.FuegoConfig{
 		DiskPersistence: false,
-		InMemory:        true,
+		Mode:            "inMemory",
 	})
 
 	fuego := FuegoInMemory{

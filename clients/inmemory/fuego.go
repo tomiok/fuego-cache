@@ -10,7 +10,6 @@ type FuegoEmbedded interface {
 	Delete(key string) string
 	Get(key string) (string, error)
 	List() []string
-	// Update(key string) error
 }
 
 // FuegoInMemory is a mode for embedded database
@@ -18,14 +17,17 @@ type FuegoInMemory struct {
 	DB *cache.InMemoryDB
 }
 
-func NewInMemory() *FuegoInMemory {
+func NewInMemory(diskPersistence bool, fileLocation string) *FuegoInMemory {
+	if diskPersistence {
+		if fileLocation == "" {
+			logs.Info("missing file location")
+		}
+	}
 	return &FuegoInMemory{DB: &cache.InMemoryDB{
 		Fuego: cache.NewCache(cache.FuegoConfig{
-			DiskPersistence: false,
-			FileLocation:    "",
-			WebPort:         "",
-			Mode:            "",
-			InMemory:        false,
+			DiskPersistence: diskPersistence,
+			FileLocation:    fileLocation,
+			Mode:            "inMemory",
 		})}}
 }
 
