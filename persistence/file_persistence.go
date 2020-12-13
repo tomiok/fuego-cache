@@ -78,7 +78,7 @@ func (f *FilePersistence) Get(key string) (string, error) {
 		}
 	}
 
-	return "", errors.New("key not fiound")
+	return "", errors.New("key not found")
 
 }
 
