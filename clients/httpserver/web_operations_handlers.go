@@ -10,13 +10,13 @@ import (
 )
 
 type OperationsHandler struct {
-	GetCallback    func(k interface{}) (string, error)
-	SetCallback    func(k interface{}, v string, ttl int) (string, error)
-	DeleteCallback func(k interface{}) (string, error)
+	GetCallback    func(k string) (string, error)
+	SetCallback    func(k string, v string, ttl int) (string, error)
+	DeleteCallback func(k string) (string, error)
 	//bulks operations
-	BulkGetCallback    func(keys []interface{})
+	BulkGetCallback    func(keys []string)
 	BulkSetCallback    func(bulkEntry cache.BulkEntry) cache.BulkResponse
-	BulkDeleteCallback func(keys []interface{})
+	BulkDeleteCallback func(keys []string)
 }
 
 func (o *OperationsHandler) GetValueHandler(w http.ResponseWriter, r *http.Request) error {
@@ -87,15 +87,15 @@ func (o *OperationsHandler) BulkSetHandler(w http.ResponseWriter, r *http.Reques
 
 // HTTP response and request helpers
 type SetEntryCMD struct {
-	Key   interface{} `json:"key"`
-	Value string      `json:"value"`
-	TTL   int         `json:"ttl,omitempty"` //if 0 it is supposed no TTL, those are IN SECONDS
+	Key   string `json:"key"`
+	Value string `json:"value"`
+	TTL   int    `json:"ttl,omitempty"` //if 0 it is supposed no TTL, those are IN SECONDS
 }
 
 type BulkSetCMD struct {
-	Key   interface{} `json:"key"`
-	Value string      `json:"value"`
-	TTL   int         `json:"ttl,omitempty"`
+	Key   string `json:"key"`
+	Value string `json:"value"`
+	TTL   int    `json:"ttl,omitempty"`
 }
 
 type HTTPResponse struct {

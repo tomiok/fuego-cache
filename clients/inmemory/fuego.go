@@ -5,6 +5,8 @@ import (
 	"github.com/tomiok/fuego-cache/logs"
 )
 
+const defaultFileLocation = "./fuego-keys.csv"
+
 type FuegoEmbedded interface {
 	Insert(key, value string) error
 	Delete(key string) string
@@ -20,7 +22,8 @@ type FuegoInMemory struct {
 func NewInMemory(diskPersistence bool, fileLocation string) *FuegoInMemory {
 	if diskPersistence {
 		if fileLocation == "" {
-			logs.Info("missing file location")
+			logs.Info("missing file location, set to default")
+			fileLocation = defaultFileLocation
 		}
 	}
 	return &FuegoInMemory{DB: &cache.InMemoryDB{

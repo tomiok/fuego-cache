@@ -3,7 +3,6 @@ package persistence
 import (
 	"errors"
 	"fmt"
-	cache "github.com/tomiok/fuego-cache/fuego"
 	"github.com/tomiok/fuego-cache/internal"
 	"github.com/tomiok/fuego-cache/logs"
 	"io/ioutil"
@@ -72,14 +71,13 @@ func (f *FilePersistence) Get(key string) (string, error) {
 			logs.Error("cannot parse key into INT type. " + err.Error())
 			return "", nil
 		}
-
-		if i == cache.ApplyHash(key) {
+		searchKey := internal.ApplyHash(key)
+		if i ==  searchKey {
 			return values[1], nil
 		}
 	}
 
 	return "", errors.New("key not found")
-
 }
 
 func buildRecord(operation string, k int, value string, inMemory bool) string {

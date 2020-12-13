@@ -1,4 +1,4 @@
-package cache
+package internal
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ const (
 	m     = math.MaxInt64
 )
 
-func ApplyHash(i interface{}) int {
+func ApplyHash(i string) int {
 
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)

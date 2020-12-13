@@ -1,7 +1,7 @@
 package cache
 
-type getCallback func(key interface{}) (string, error)
-type addCallback func(key interface{}, value string, ttl ...int) (string, error)
+type getCallback func(key string) (string, error)
+type addCallback func(key string, value string, ttl ...int) (string, error)
 
 //FuegoOps
 type FuegoOps interface {

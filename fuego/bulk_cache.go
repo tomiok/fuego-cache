@@ -1,7 +1,7 @@
 package cache
 
 //BulkGet will return all the keys and return the value if it is found, otherwise a fake response with an error.
-func (c *cache) BulkGet(keys []interface{}) []BulkGetResponse {
+func (c *cache) BulkGet(keys []string) []BulkGetResponse {
 	var res []BulkGetResponse
 	for _, k := range keys {
 		val, err := c.GetOne(k)
@@ -39,7 +39,7 @@ func (c *cache) BulkSet(be BulkEntry) BulkResponse {
 }
 
 //BulkDelete will delete all the keys in the cache and return if the response showing if any error occurred.
-func (c *cache) BulkDelete(keys []interface{}) BulkResponse {
+func (c *cache) BulkDelete(keys []string) BulkResponse {
 	var res BulkResponse
 	for _, key := range keys {
 		c.DeleteOne(key)
@@ -62,12 +62,12 @@ type BulkEntry struct {
 }
 
 type e struct {
-	key   interface{}
+	key   string
 	value string
 	ttl   int
 }
 
-func (be *BulkEntry) Add(key interface{}, value string, ttl int) {
+func (be *BulkEntry) Add(key string, value string, ttl int) {
 	e := e{
 		key:   key,
 		value: value,

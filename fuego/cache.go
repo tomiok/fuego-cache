@@ -2,6 +2,7 @@ package cache
 
 import (
 	"errors"
+	"github.com/tomiok/fuego-cache/internal"
 	"github.com/tomiok/fuego-cache/persistence"
 	"sync"
 	"time"
@@ -75,7 +76,7 @@ func (c *cache) Clear() {
 }
 
 //SetOne will add an entry into the key-value store.
-func (c *cache) SetOne(k interface{}, v string, ttl ...int) (string, error) {
+func (c *cache) SetOne(k string, v string, ttl ...int) (string, error) {
 	expiration := -1
 	if len(ttl) > 0 {
 		expiration = ttl[0]
@@ -94,9 +95,9 @@ func (c *cache) SetOne(k interface{}, v string, ttl ...int) (string, error) {
 
 //GetOne will return a value in the cache if the key lookup is OK and the
 //value is not expired. Otherwise, the an error will be returned.
-func (c *cache) GetOne(key interface{}) (string, error) {
+func (c *cache) GetOne(key string) (string, error) {
 	c.lock.RLock()
-	hashedKey := ApplyHash(key)
+	hashedKey := internal.ApplyHash(key)
 	val, ok := c.cache.entries[hashedKey]
 
 	if ok {
@@ -118,9 +119,9 @@ func (c *cache) GetOne(key interface{}) (string, error) {
 }
 
 //DeleteOne will delete the entry given a key, returns "ok" if is deleted, otherwise "nil".
-func (c *cache) DeleteOne(key interface{}) string {
+func (c *cache) DeleteOne(key string) string {
 	c.lock.RLock()
-	hashKey := ApplyHash(key)
+	hashKey := internal.ApplyHash(key)
 	_, ok := c.cache.entries[hashKey]
 
 	if ok {
@@ -151,9 +152,9 @@ func (c *cache) Count() int {
 }
 
 //toEntry convert key value interfaces into a system Entry.
-func toEntry(key interface{}, value string, ttl int) entry {
+func toEntry(key string, value string, ttl int) entry {
 	// client add a TTL into the entry
-	hashcode := ApplyHash(key)
+	hashcode := internal.ApplyHash(key)
 	if ttl > 0 {
 		return entry{
 			key: hashcode,

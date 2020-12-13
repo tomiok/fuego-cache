@@ -32,13 +32,13 @@ func main() {
 			addr,
 			httpserver.Services{
 				Ops: &httpserver.OperationsHandler{
-					GetCallback: func(s interface{}) (string, error) {
+					GetCallback: func(s string) (string, error) {
 						return fuegoInstance.GetOne(s)
 					},
-					SetCallback: func(k interface{}, v string, ttl int) (string, error) {
+					SetCallback: func(k string, v string, ttl int) (string, error) {
 						return fuegoInstance.SetOne(k, v, ttl)
 					},
-					DeleteCallback: func(k interface{}) (string, error) {
+					DeleteCallback: func(k string) (string, error) {
 						return fuegoInstance.DeleteOne(k), nil
 					},
 					BulkSetCallback: func(bulkEntry cache.BulkEntry) cache.BulkResponse {
