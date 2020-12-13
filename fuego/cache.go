@@ -84,10 +84,20 @@ func (c *cache) SetOne(k string, v string, ttl ...int) (string, error) {
 	e := toEntry(k, v, expiration)
 
 	c.lock.Lock()
-	c.cache.entries[e.key] = fuegoValue{value: e.object.value, ttl: e.object.ttl}
+
 	if c.diskPersistence {
-		c.persist.Save(get, e.key, e.object.value)
+		//check if the value is in the cache, to avoid writing again in the file
+		if _, ok := c.cache.entries[e.key]; ok {
+			c.persist.Update(e.key, e.object.value)
+		} else {
+			c.cache.entries[e.key] = fuegoValue{value: e.object.value, ttl: e.object.ttl}
+			c.persist.Save(e.key, e.object.value)
+		}
+		c.lock.Unlock()
+		return responseOK, nil
 	}
+
+	c.cache.entries[e.key] = fuegoValue{value: e.object.value, ttl: e.object.ttl}
 
 	c.lock.Unlock()
 	return responseOK, nil
@@ -127,7 +137,7 @@ func (c *cache) DeleteOne(key string) string {
 	if ok {
 		delete(c.cache.entries, hashKey)
 		if c.diskPersistence {
-			c.persist.Save(del, hashKey, "") //value does not matter in delete operation
+			c.persist.Save(hashKey, "") //value does not matter in delete operation
 		}
 		c.lock.RUnlock()
 		return responseOK

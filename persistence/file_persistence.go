@@ -14,8 +14,9 @@ import (
 )
 
 type Persist interface {
-	Save(operation string, k int, value string)
+	Save(k int, value string)
 	Get(key string) (string, error)
+	Update(k int, value string)
 }
 
 type Data struct {
@@ -29,7 +30,11 @@ type FilePersistence struct {
 	InMemory bool
 }
 
-func (f *FilePersistence) Save(operation string, k int, value string) {
+func (f *FilePersistence) Update(k int, value string) {
+
+}
+
+func (f *FilePersistence) Save(k int, value string) {
 	//read a file if already exists, or create a new one
 	file, err := os.OpenFile(filepath.Join(f.File), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
@@ -41,7 +46,7 @@ func (f *FilePersistence) Save(operation string, k int, value string) {
 
 	defer internal.OnCloseError(file.Close)
 
-	record := buildRecord(operation, k, value, f.InMemory)
+	record := buildRecord(k, value, f.InMemory)
 
 	_, err = file.WriteString(record)
 
@@ -72,7 +77,7 @@ func (f *FilePersistence) Get(key string) (string, error) {
 			return "", nil
 		}
 		searchKey := internal.ApplyHash(key)
-		if i ==  searchKey {
+		if i == searchKey {
 			return values[1], nil
 		}
 	}
@@ -80,10 +85,10 @@ func (f *FilePersistence) Get(key string) (string, error) {
 	return "", errors.New("key not found")
 }
 
-func buildRecord(operation string, k int, value string, inMemory bool) string {
+func buildRecord(k int, value string, inMemory bool) string {
 	if inMemory {
 		return fmt.Sprintf("%d,%s\n", k, value)
 	} else {
-		return fmt.Sprintf("%s,%d,%s,%d\n", operation, k, value, time.Now().Unix())
+		return fmt.Sprintf("%d,%s,%d\n", k, value, time.Now().Unix())
 	}
 }

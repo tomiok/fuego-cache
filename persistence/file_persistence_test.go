@@ -13,7 +13,7 @@ var filePersistence = FilePersistence{
 
 func TestFilePersistence_Get(t *testing.T) {
 	key := internal.ApplyHash("123")
-	filePersistence.Save("get", key, "test")
+	filePersistence.Save(key, "test")
 
 	res, err := filePersistence.Get("123")
 
