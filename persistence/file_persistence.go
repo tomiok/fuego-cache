@@ -19,11 +19,11 @@ type Persist interface {
 	Update(k int, value string)
 }
 
-type Data struct {
-	operation string
-	key       int
-	value     string
-}
+const (
+	intro          = "\n"
+	comma          = ","
+	filePermission = 0666
+)
 
 type FilePersistence struct {
 	File     string
@@ -31,12 +31,13 @@ type FilePersistence struct {
 }
 
 func (f *FilePersistence) Update(k int, value string) {
+	bytes, err := ioutil.ReadFile(f.File)
 
 }
 
 func (f *FilePersistence) Save(k int, value string) {
 	//read a file if already exists, or create a new one
-	file, err := os.OpenFile(filepath.Join(f.File), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile(filepath.Join(f.File), os.O_APPEND|os.O_CREATE|os.O_WRONLY, filePermission)
 
 	if err != nil {
 		logs.LogError(err)
@@ -65,11 +66,17 @@ func (f *FilePersistence) Get(key string) (string, error) {
 
 	text := string(bytes)
 
-	pairs := strings.Split(text, "\n")
+	pairs := strings.Split(text, intro)
 
 	for _, kv := range pairs {
-		values := strings.Split(kv, ",")
+		values := strings.Split(kv, comma)
 		hashedKey := values[0]
+
+		// cannot read empty keys, means EOF
+		if hashedKey == "" {
+			break
+		}
+
 		i, err := strconv.Atoi(hashedKey)
 
 		if err != nil {
@@ -87,8 +94,8 @@ func (f *FilePersistence) Get(key string) (string, error) {
 
 func buildRecord(k int, value string, inMemory bool) string {
 	if inMemory {
-		return fmt.Sprintf("%d,%s\n", k, value)
+		return fmt.Sprintf("%d,%s"+intro, k, value)
 	} else {
-		return fmt.Sprintf("%d,%s,%d\n", k, value, time.Now().Unix())
+		return fmt.Sprintf("%d,%s,%d"+intro, k, value, time.Now().Unix())
 	}
 }
