@@ -33,6 +33,13 @@ type FilePersistence struct {
 func (f *FilePersistence) Update(k int, value string) {
 	bytes, err := ioutil.ReadFile(f.File)
 
+	if err != nil {
+		logs.Error("cannot update the value " + err.Error())
+		return
+	}
+
+	getValue(bytes)
+
 }
 
 func (f *FilePersistence) Save(k int, value string) {
@@ -64,8 +71,11 @@ func (f *FilePersistence) Get(key string) (string, error) {
 		return "", err
 	}
 
-	text := string(bytes)
+	return getValue(bytes, key, 0, false)
+}
 
+func getValue(bytes []byte, strSearchKey string, hashedSearchKey int, hashed bool) (string, error) {
+	text := string(bytes)
 	pairs := strings.Split(text, intro)
 
 	for _, kv := range pairs {
@@ -83,7 +93,15 @@ func (f *FilePersistence) Get(key string) (string, error) {
 			logs.Error("cannot parse key into INT type. " + err.Error())
 			return "", nil
 		}
-		searchKey := internal.ApplyHash(key)
+
+		// we can receive the search eky as string in plain text or the hashcode
+		var searchKey int
+		if hashed {
+			searchKey = hashedSearchKey
+		} else {
+			searchKey = internal.ApplyHash(strSearchKey)
+		}
+
 		if i == searchKey {
 			return values[1], nil
 		}
