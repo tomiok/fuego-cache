@@ -38,7 +38,7 @@ func (f *FilePersistence) Update(k int, value string) {
 		return
 	}
 
-	getValue(bytes)
+	getValue(bytes, "", k, true)
 
 }
 
