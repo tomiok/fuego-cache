@@ -19,6 +19,8 @@ type Persist interface {
 	Update(k int, value string)
 }
 
+var notFoundErr = errors.New("key not found")
+
 const (
 	intro          = "\n"
 	comma          = ","
@@ -30,6 +32,49 @@ type FilePersistence struct {
 	InMemory bool
 }
 
+func write(fileLocation, record string) error {
+	//read a file if already exists, or create a new one
+	file, err := os.OpenFile(filepath.Join(fileLocation), os.O_APPEND|os.O_CREATE|os.O_WRONLY, filePermission)
+
+	if err != nil {
+		logs.LogError(err)
+		// no error returned, just a shame
+		return err
+	}
+
+	defer internal.OnCloseError(file.Close)
+
+	_, err = file.WriteString(record)
+
+	return err
+}
+
+func updateValue(bytes []byte, k int, value, fileLocation string) ([]string, error) {
+	pairs := parseBytes(bytes)
+	var (
+		found   bool
+		entries []string
+	)
+
+	for i, kv := range pairs {
+		values := strings.Split(kv, comma)
+		hashedKey, _ := strconv.Atoi(values[0])
+
+		if k == hashedKey {
+			found = true
+			entries = append(entries, fmt.Sprintf("%d,%s", k, value))
+		} else {
+			entries = append(entries, fmt.Sprintf("%d,%s", hashedKey, kv[1]))
+		}
+	}
+
+	if !found {
+		return nil, notFoundErr
+	}
+
+	return entries, nil
+}
+
 func (f *FilePersistence) Update(k int, value string) {
 	bytes, err := ioutil.ReadFile(f.File)
 
@@ -38,8 +83,7 @@ func (f *FilePersistence) Update(k int, value string) {
 		return
 	}
 
-	getValue(bytes, "", k, true)
-
+	updateValue(bytes, k, value, f.File)
 }
 
 func (f *FilePersistence) Save(k int, value string) {
@@ -74,9 +118,13 @@ func (f *FilePersistence) Get(key string) (string, error) {
 	return getValue(bytes, key, 0, false)
 }
 
-func getValue(bytes []byte, strSearchKey string, hashedSearchKey int, hashed bool) (string, error) {
+func parseBytes(bytes []byte) []string {
 	text := string(bytes)
-	pairs := strings.Split(text, intro)
+	return strings.Split(text, intro)
+}
+
+func getValue(bytes []byte, strSearchKey string, hashedSearchKey int, hashed bool) (string, error) {
+	pairs := parseBytes(bytes)
 
 	for _, kv := range pairs {
 		values := strings.Split(kv, comma)
@@ -107,7 +155,7 @@ func getValue(bytes []byte, strSearchKey string, hashedSearchKey int, hashed boo
 		}
 	}
 
-	return "", errors.New("key not found")
+	return "", notFoundErr
 }
 
 func buildRecord(k int, value string, inMemory bool) string {
