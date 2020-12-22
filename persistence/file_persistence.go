@@ -56,7 +56,7 @@ func updateValue(bytes []byte, k int, value, fileLocation string) ([]string, err
 		entries []string
 	)
 
-	for i, kv := range pairs {
+	for _, kv := range pairs {
 		values := strings.Split(kv, comma)
 		hashedKey, _ := strconv.Atoi(values[0])
 
